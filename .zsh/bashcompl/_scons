@@ -1,0 +1,71 @@
+# -*- mode:shell-script -*-
+
+# Programmable completion for the scons command under bash.
+
+# This file draws heavily on the rake and subversion files that come as standard with Bash 3.
+
+#  Author :  Russel Winder
+#  Version :  2006-07-31T19:14
+#  Licence : GPL
+
+_scons()
+{
+    local cur prev sconsf i
+
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    sconsf="SConstruct"
+
+    if [[ "$prev" == "-f" ]]; then
+        _filedir
+        return 0
+    fi
+
+    if [[ "$cur" == *=* ]]; then
+        prev=${cur/=*/}
+        cur=${cur/*=/}
+        if [[ "$prev" == "--file=" || "$prev" == "--makefile=" || "$prev" == "--sconstruct=" ]]; then
+            _filedir -o nospace
+            return 0
+        fi
+    fi
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $( compgen -W '-b -m -S -t --no-keep-going --stop --touch\
+            -c --clean --remove -C '--directory='\
+            --cache-disable --no-cache --cache-force --cache-populate --cache-show\
+            '--config=' -d -D '--debug=' '--diskcheck=' '--duplicate='\
+           -f '--file=' '--makefile=' '--sconstruct='\
+           -h --help -H --help-options -i --ignore-errors\
+           -I '--include=' --implicit-cache --implicit-deps-changed --implicit-deps-unchanged\
+           -j '--jobs=' -l --keepgoing '--max-drift='\
+           -n --no-exec --just-print --dry-run --recon\
+           '--profile=' -q --question -Q --random -s --silent --quiet\
+           '--taskmastertrace=' -u --up --search-up -u -v --version\
+           '--warn=' '--warning=' -Y '--repository=''\
+            -- $cur ))
+    else
+
+        for (( i=0; i < ${#COMP_WORDS[@]}; i++)); do
+            case "${COMP_WORDS[i]}" in
+            -f)
+                eval sconsf=${COMP_WORDS[i+1]}
+                break
+                ;;
+            --file=*|--makefile=* | --sconstruct=*)
+                eval sconsf=${COMP_WORDS[i]/*=/}
+                break
+                ;;
+            esac
+        done
+
+        [ ! -f $sconsf ] && return 0
+
+        #  COMPREPLY=( $( scons -s -n -f "$sconsf" --debug=tree . | \
+        #      awk -F '-' '{ print $2 }' | \
+        #      command grep "^$cur" ))
+
+    fi
+}
+complete -F _scons $filenames scons

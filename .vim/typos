@@ -1,0 +1,43 @@
+"" simple corrections
+iab alos        also
+iab aslo        also
+iab bianry      binary
+iab bianries    binaries
+iab charcter    character
+iab charcters   characters
+iab exmaple     example
+iab exmaples    examples
+iab shoudl      should
+iab seperate    separate
+iab gearten     geraten
+iab gerarten    geraten
+iab relyast     relayst
+iab teh         the
+iab Srever      Server
+iab tpyo        typo
+iab nciht       nicht
+iab doer        oder
+iab Dreckfuhler Druckfehler
+iab sit         ist
+iab DU          Du
+iab dU          du
+iab felt        fehlt
+
+"" date
+iab idate <C-R>=strftime("%Y-%m-%d")<CR>
+
+"" greetings
+iab mfg <cr>mit freundlichen gruessen,<cr>rico schiekel
+iab MFG <cr>Mit freundlichen Gruessen,<cr>Rico Schiekel
+
+iab gru gruesse,<cr>rico
+iab vgru viele gruesse,<cr>rico
+iab cur cu rico
+iab snsn <schnipp><cr></schnapp><up>
+
+iab rr regards,<cr>rico
+iab grr greetings,<cr>rico
+
+
+" vim:syntax=vim sw=4 ts=4 expandtab
+

@@ -1,0 +1,121 @@
+"" ----------------------------------------------------------------------------
+""  Funktionen
+"" ----------------------------------------------------------------------------
+fun! GZIP_read(cmd)
+let ch_save = &ch
+        set ch=2
+        execute "'[,']!" . a:cmd
+        set nobin
+        let &ch = ch_save
+        execute ":doautocmd BufReadPost " . expand("%:r")
+endfun
+
+" Datei wieder komprimieren mit "cmd"
+fun! GZIP_write(cmd)
+        if rename(expand("<afile>"), expand("<afile>:r")) == 0
+                execute "!" . a:cmd . " <afile>:r"
+        endif
+endfun
+
+" Datei anhängen mit "cmd"
+fun! GZIP_appre(cmd)
+        execute "!" . a:cmd . " <afile>"
+        call rename(expand("<afile>:r"), expand("<afile>"))
+endfun
+
+
+" fu! ToggleStatusLine()
+"   let g:StatusLinesCurrent=g:StatusLinesCurrent+1
+"   if (!exists("g:StatusLines" . g:StatusLinesCurrent))
+"     let g:StatusLinesCurrent=0
+"   endif
+"   let &statusline=g:StatusLines{g:StatusLinesCurrent}
+" endf 
+
+
+function! MakeSession()
+    let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
+    if (filewritable(b:sessiondir) != 2)
+        exe 'silent !mkdir -p ' b:sessiondir
+        redraw!
+    endif
+    let b:filename = b:sessiondir . '/session.vim'
+    exe "mksession! " . b:filename
+endfunction
+
+function! LoadSession()
+    let b:sessiondir  = $HOME . "/.vim/sessions" . getcwd()
+    let b:sessionfile = b:sessiondir . "/session.vim"
+    if (filereadable(b:sessionfile))
+        exe 'source ' b:sessionfile
+    else
+        echo "No session loaded."
+    endif
+endfunction
+
+function UpdateModifiable()
+    if !exists("b:setmodifiable")
+        let b:setmodifiable = 0
+    endif
+    if &readonly
+        if &modifiable
+            setlocal nomodifiable
+            let b:setmodifiable = 1
+        endif
+    else
+        if b:setmodifiable
+            setlocal modifiable
+        endif
+    endif
+endfunction
+
+function! UpdateCTags() 
+    let _r_ = system('ctags -a -o ~/.vim/ctags --c++-kinds=+p --fields=+iaS --extra=+q --languages=c++ ' . expand("%:p"))
+    unlet _r_
+endfunction
+
+" toggles the quickfix window. 
+command -bang -nargs=? ToggleQFix call ToggleQuickFix(<bang>0) 
+function! ToggleQuickFix(forced) 
+  if exists("g:qfix_win") && a:forced == 0 
+    cclose 
+  else 
+    copen
+  endif 
+endfunction
+
+function AddIfndefGuard()
+    let s:header_guard=toupper(tr(expand("<afile>"), ".", "_"))
+                                                                        
+    call append(line('$'), "#ifndef ".s:header_guard)
+    call append(line('$'), "#define ".s:header_guard)
+    call append(line('$'), "")
+
+    call append(line('$'), "")
+    call append(line('$'), "#endif // ".s:header_guard)
+endfunction
+
+" use diff from /usr/bin
+function UsrBinDiff()
+   let opt = ""
+   if &diffopt =~ "icase"
+     let opt = opt . "-i "
+   endif
+   if &diffopt =~ "iwhite"
+     let opt = opt . "-b "
+   endif
+   silent execute "!/usr/bin/diff -a " . opt . v:fname_in . " " . v:fname_new . " > " . v:fname_out
+endfunction
+
+function LoadPythonPath()
+python << EOF
+import os
+import sys
+import vim
+for p in sys.path:
+    if os.path.isdir(p):
+        vim.command(r"set path+=%s" % (p.replace(" ", r"\ ")))
+EOF
+endfunction
+
+" vim:syntax=vim sw=4 ts=4 expandtab

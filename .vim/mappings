@@ -1,0 +1,238 @@
+"" ----------------------------------------------------------------------------
+""  Mappings
+"" ----------------------------------------------------------------------------
+
+"" ----------------------------------------------------------------------------
+"" :h digraphs
+"" :dig
+"" i ctrl_k EC  --> ^[  ==  meta(alt) on my system
+"" ----------------------------------------------------------------------------
+
+map <silent> <F1> <ESC>:bprev<CR>
+map <silent> <F2> <ESC>:bnext<CR>
+map <silent> <F3> <ESC>:tabprev<CR>
+map <silent> <F4> <ESC>:tabnext<CR>
+" map <silent> <F3> <ESC>:make fast=true debug=true .<CR>
+" map <silent> <F4> <ESC>:make fast=true debug=false .<CR>
+map <silent> <F5> <ESC>:Tlist<CR><C-W>l
+map <silent> <F6> <ESC>:ToggleQFix<CR>
+map <silent> <F7> <ESC>:ShowMarksToggle<CR>
+map <silent> <F8> <ESC>:YRShow<CR>
+map <silent> <F9> <ESC>:set invlist<CR>
+map <silent> <F10> <ESC>:set invspell<CR>
+map <silent> <F11> <ESC>:w !xclip<CR><CR>
+vmap <silent> <F11> "*y
+map <silent> <S-F11> <ESC>:r!xclip -o<CR> 
+set pastetoggle=<F12>
+
+" map <silent> <F6> <ESC>:vnew<CR>:read !svn diff<CR>:set syntax=diff buftype=nofile<CR>gg
+" imap <silent> <F6> <ESC>:vnew<CR>:read !svn diff<CR>:set syntax=diff buftype=nofile<CR>gg
+
+imap <silent> <F1> <ESC>:bprev<CR>
+imap <silent> <F2> <ESC>:bnext<CR>
+imap <silent> <F3> <ESC>:tabprev<CR>
+imap <silent> <F4> <ESC>:tabnext<CR>
+" imap <silent> <F3> <ESC>:make fast=true debug=true .<CR>
+" imap <silent> <F4> <ESC>:make fast=true debug=false .<CR>
+imap <silent> <F5> <ESC>:Tlist<CR><C-W>l
+imap <silent> <F6> <ESC>:ToggleQFix<CR>
+imap <silent> <F7> <ESC>:ShowMarksToggle<CR>
+imap <silent> <F8> <ESC>:YRShow<CR>
+imap <silent> <F9> <ESC>:set invlist<CR>a
+imap <silent> <F10> <ESC>:set invspell<CR>a
+
+" change mail subject
+map ,ms 1G/^Subject: <CR>yypIX-Old-<ESC>-W
+
+" make-letter-urgent
+map ,mp 1G}OPriority: urgent<ESC>
+
+" remove supercite-quotes
+vmap ,msq :s/^> *[a-zA-Z]*>/> >/<C-M>
+
+" cursor mappings solaris
+map <ESC>OA <Up>
+map <ESC>OB <Down>
+map <ESC>OC <Right>
+map <ESC>OD <Left>
+imap <ESC>OA <Up>
+imap <ESC>OB <Down>
+imap <ESC>OC <Right>
+imap <ESC>OD <Left>
+
+" cursor mappings x-terminal
+map <ESC>[A <Up>
+map <ESC>[B <Down>
+map <ESC>[C <Right>
+map <ESC>[D <Left>
+imap <ESC>[A <Up>
+imap <ESC>[B <Down>
+imap <ESC>[C <Right>
+imap <ESC>[D <Left>
+
+" Formatting the current paragraph according to
+" the current 'textwidth' with ^J (control-j):
+imap <C-J> <C-O>gqap
+nmap <C-J> gqap
+vmap <C-J> gq
+
+" footnotes
+ab ~1 [1]<esc>:/^--\s*/-1/<CR>o<insert><CR>Footnotes:<CR>----------<CR>[1]
+ab ~2 [2]<esc>:/^Footnotes\:/+2/<CR>o<insert>[2]
+ab ~3 [3]<esc>:/^Footnotes\:/+3/<CR>o<insert>[3]
+ab ~4 [4]<esc>:/^Footnotes\:/+4/<CR>o<insert>[4]
+ab ~5 [5]<esc>:/^Footnotes\:/+5/<CR>o<insert>[5] 
+ab ~6 [5]<esc>:/^Footnotes\:/+5/<CR>o<insert>[6] 
+ab ~7 [5]<esc>:/^Footnotes\:/+5/<CR>o<insert>[7] 
+ab ~8 [5]<esc>:/^Footnotes\:/+5/<CR>o<insert>[8] 
+ab ~9 [5]<esc>:/^Footnotes\:/+5/<CR>o<insert>[9] 
+
+" Make CTRL-^ rebound to the *column* in the previous file
+noremap <C-^> <C-^>`"
+
+" Make "gf" rebound to last cursor position (line *and* column)
+noremap gf gf`"
+
+" X soll x sein
+cabbrev X x
+
+" comment settings and keys
+vmap ,C <plug>VisualComment
+nmap ,C <plug>Comment
+vmap ,c <plug>VisualTraditional
+nmap ,c <plug>Traditional
+
+" block quote keys
+vmap ,b :call VBlockquote()<CR>
+
+" better block shifting
+vnoremap < <gv
+vnoremap > >gv
+
+" search selected text
+vnoremap * y/<C-R>"<CR> 
+vnoremap # y?<C-R>"<CR>
+
+" upper/lower word
+nmap ;U mQviwU`Q
+nmap ;L mQviwu`Q
+" upper/lower first char of word
+nmap ;u mQgewvU`Q
+nmap ;l mQgewvu`Q
+
+" . behaviour
+nmap . .`[
+
+" word under cursor will be swapped with the next word
+nmap <silent> gw "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><c-o>
+
+" tabs
+imap <silent> t <ESC>:tabnew<CR>
+map <silent> t <ESC>:tabnew<CR>
+imap <silent> c <ESC>:tabclose<CR>
+map <silent> c <ESC>:tabclose<CR>
+
+
+" direct select first 10 buffers
+noremap <unique> 1 :tabnext 1<CR>
+noremap <unique> 2 :tabnext 2<CR>
+noremap <unique> 3 :tabnext 3<CR>
+noremap <unique> 4 :tabnext 4<CR>
+noremap <unique> 5 :tabnext 5<CR>
+noremap <unique> 6 :tabnext 6<CR>
+noremap <unique> 7 :tabnext 7<CR>
+noremap <unique> 8 :tabnext 8<CR>
+noremap <unique> 9 :tabnext 9<CR>
+noremap <unique> 0 :tabnext 10<CR>
+inoremap <unique> 1 <esc>:tabnext 1<CR>:<BS>a
+inoremap <unique> 2 <esc>:tabnext 2<CR>:<BS>a
+inoremap <unique> 3 <esc>:tabnext 3<CR>:<BS>a
+inoremap <unique> 4 <esc>:tabnext 4<CR>:<BS>a
+inoremap <unique> 5 <esc>:tabnext 5<CR>:<BS>a
+inoremap <unique> 6 <esc>:tabnext 6<CR>:<BS>a
+inoremap <unique> 7 <esc>:tabnext 7<CR>:<BS>a
+inoremap <unique> 8 <esc>:tabnext 8<CR>:<BS>a
+inoremap <unique> 9 <esc>:tabnext 9<CR>:<BS>a
+inoremap <unique> 0 <esc>:tabnext 10<CR>:<BS>a
+
+" spelling
+nmap ,sn ]s
+nmap ,sp [s
+nmap ,s= z=
+nmap ,sg zG
+nmap ,sm zW
+nmap ,sd :set spelllang=de_20<CR>
+nmap ,se :set spelllang=en<CR>
+nmap <C-X>s ei<C-X>s
+
+" aspell spell check
+map ,a :!aspell --master=de check  %
+map ;a :!aspell --master=en check  %
+
+" brings up file explorer
+" map <C-e> <ESC>:Expl<RETURN><ESC><C-W><C-W>
+map <C-e> <ESC>::NERDTreeToggle<CR>
+
+" html/unhtml special chars like ae, ue, oe, äüö
+nmap ;H :%s/ä/\&auml;/egI<CR>
+      \ :%s/ü/\&uuml;/egI<CR>
+      \ :%s/ö/\&ouml;/egI<CR>
+      \ :%s/Ä/\&Auml;/egI<CR>
+      \ :%s/Ü/\&Uuml;/egI<CR>
+      \ :%s/Ö/\&Ouml;/egI<CR>
+nmap ,h :%s/&auml;/ä/egI<CR>
+      \ :%s/&uuml;/ü/egI<CR>
+      \ :%s/&ouml;/ö/egI<CR>
+      \ :%s/&Auml;/Ä/egI<CR>
+      \ :%s/&Uuml;/Ü/egI<CR>
+      \ :%s/&Ouml;/Ö/egI<CR>
+
+" move a line of text up or down
+nmap ,j mz:m+<CR>`z
+nmap ,k mz:m-2<CR>`z
+vmap ,j :m'>+<CR>`<my`>mzgv`yo`z
+vmap ,k :m'<-2<CR>`>my`<mzgv`yo`z
+
+" better paste
+noremap p <esc>:set paste<CR>"*p:set nopaste<CR>
+inoremap p <esc>:set paste<CR>"*p:set nopaste<CR>li
+noremap P <esc>:set paste<CR>h"*p:set nopaste<CR>
+inoremap P <esc>:set paste<CR>h"*p:set nopaste<CR>li
+
+" center text
+nmap ;C :center<CR>
+vmap ;C :center<CR>
+
+" bracket expanding and completion
+vnoremap ( <esc>`>a)<esc>`<i(<esc>
+vnoremap [ <esc>`>a]<esc>`<i[<esc>
+vnoremap { <esc>`>a}<esc>`<i{<esc>
+vnoremap ,< <esc>`>a><esc>`<i<<esc>
+vnoremap ' <esc>`>a'<esc>`<i'<esc>
+vnoremap " <esc>`>a"<esc>`<i"<esc>
+
+" remove/delete trailing whitespace:
+nmap <silent> ;tr :%s/\s\+$//<CR>
+vmap <silent> ;tr :s/\s\+$//<CR>
+
+" execute the command in the current line (minus the first word, which
+" is intended to be a shell prompt) and insert the output in the buffer
+map ,e ^wy$:r!"
+map ,E ^y$:r!"
+
+" uncamelcase visual selection
+vnoremap ;c :B s/\v\C(([a-z]+)([A-Z]))/\2_\l\3/g<CR>
+
+" map ctrl-space to omnicomplete
+inoremap <Nul> <C-x><C-o>
+
+" command-line window per default
+" nnoremap : q:i
+nnoremap / q/i
+nnoremap ? q?i
+
+" gv search word under cursor with vimgrep
+nmap ,gv <ESC>:vimgrep <cword> **/*.{c,h,cc,hh,cpp,hpp,hxx,py}<CR>
+nmap ,gV <ESC>:vimgrep <cWORD> **/*.{c,h,cc,hh,cpp,hpp,hxx,py}<CR>
+
+" vim:syntax=vim sw=4 ts=4 expandtab

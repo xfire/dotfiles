@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+case "$1" {
+    ("-h" | "--help")
+        echo "syntax: $0 [action]"
+        echo "   actios:  on, off, auto (default)"
+        echo
+        exit 0
+    ;;
+    ("off" | "OFF" | "Off")
+        synclient TouchpadOff=1
+    ;;
+    ("on" | "ON" | "On")
+        synclient TouchpadOff=0
+    ;;
+    ("auto" | "AUTO" | "Auto" | *)
+        if [[ -n "$(grep -e usbhid /proc/bus/usb/devices)" ]] {
+            synclient TouchpadOff=1
+        } else {
+            synclient TouchpadOff=0
+        }
+    ;;
+}
+

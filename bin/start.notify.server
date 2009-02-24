@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+export LC_CTYPE="de_DE"
+
+OPORT="11111"
+OHOST="loc"
+OLOGFILE="$HOME/.osd_log"
+
+killall notify_server.py >/dev/null 2>&1
+$HOME/bin/notify_server.py -H "$OHOST" -P "$OPORT" -l "$OLOGFILE" 2>&1 &

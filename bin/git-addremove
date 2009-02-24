@@ -1,0 +1,19 @@
+#!/bin/sh
+
+USAGE='[targets]'
+OPTIONS_SPEC=
+SUBDIRECTORY_OK=yes
+. git-sh-setup
+
+require_work_tree
+
+TARGETS=$*
+
+test -z "${TARGETS}" && TARGETS="."
+
+git add -v ${TARGETS}
+git add -v -u ${TARGETS}
+
+if ! test -z "$(git ls-files --deleted ${TARGETS})"; then
+    git ls-files --deleted -z ${TARGETS} | xargs -0 git rm
+fi

@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+
+EDITOR="vim -f -o"
+
+SVNTMP=""
+cleanup_exit() {
+    rm -rf "$SVNTMP"
+}
+
+# Remove temporary files even if we get interrupted
+trap "cleanup_exit" 0 # normal exit
+trap "exit 255" 1 2 3 6 15 # HUP INT QUIT ABRT TERM
+
+SVNTMP="${TMPDIR-/tmp}/svneditor.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "$SVNTMP") || {
+    echo "Could not create temporary directory! Exiting." 1>&2
+    exit 1
+}
+
+(
+    egrep '^(A|C|D|M|R)' "$1" | cut -b 5- | while read changed; do
+        svn diff "$changed" >> "$SVNTMP/diff"
+    done
+)
+
+if [ -s "$SVNTMP/diff" ]; then
+    $EDITOR "+e $SVNTMP/diff" '+set cmdheight=2 buftype=help filetype=diff' "+vsplit $1" '+set cmdheight=1' || exit $?
+else
+    $EDITOR "$1" || exit $?
+fi
+
+exit $?

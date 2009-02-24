@@ -1,0 +1,338 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 Rico Schiekel (fire at downgra dot de)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+# vim:syntax=python:sw=4:ts=4:expandtab
+
+__version__ = '0.1'
+__author__  = 'Rico Schiekel'
+
+import sys
+import os
+import re
+import types
+import fnmatch
+import itertools
+import difflib
+import logging
+from optparse import OptionParser
+
+try:
+    from functools import partial
+except ImportError:
+    # python < 2.5
+    def partial(func, *args, **keywords):
+        def newfunc(*fargs, **fkeywords):
+            newkeywords = keywords.copy()
+            newkeywords.update(fkeywords)
+            return func(*(args + fargs), **newkeywords)
+        newfunc.func = func
+        newfunc.args = args
+        newfunc.keywords = keywords
+        return newfunc
+
+
+def any(seq, pred=None):
+    "Returns True if pred(x) is true for at least one element in the iterable"
+    for elem in itertools.ifilter(pred, seq):
+        return True
+    return False
+
+def no(seq, pred=None):
+    "Returns True if pred(x) is false for every element in the iterable"
+    for elem in itertools.ifilter(pred, seq):
+        return False
+    return True
+
+def gen_files(directories, includes = None, excludes = None, recursive = False):
+    def match(name, sinc = [], sexc = []):
+        return (any(includes.union(sinc), partial(fnmatch.fnmatch, name)) and
+                no(excludes.union(sexc), partial(fnmatch.fnmatch, name)))
+    for directory in directories:
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                fpath = os.path.normpath(os.path.join(root, file))
+                if match(file) or match(fpath):
+                    yield fpath
+            if not recursive:
+                del dirs[:]
+            else:
+                dirs[:] = [d for d in dirs if match(d, ['*'])]
+
+class diff(object):
+    def __init__(self, dfunc, old, new):
+        self.__dfunc = dfunc
+        self.__old = old
+        self.__new = new
+    def __ror__(self, input):
+        for file in input:
+            try:
+                f = open(file, 'r')
+                try:
+                    lines = f.read()
+                finally:
+                    f.close()
+
+                new_lines, changed = re.subn(self.__old, self.__new, lines)
+                if changed:
+                    diff = '\n'.join(self.__dfunc(lines.split('\n'),
+                                                  new_lines.split('\n'),
+                                                  file,
+                                                  file + '.new',
+                                                  lineterm = ''))
+                    if diff:
+                        yield (file, diff)
+            except IOError, e:
+                logging.error(e)
+
+class unified_diff(diff):
+    def __init__(self, old, new):
+        super(unified_diff, self).__init__(difflib.unified_diff, old, new)
+
+class context_diff(diff):
+    def __init__(self, old, new):
+        super(context_diff, self).__init__(difflib.context_diff, old, new)
+
+class ndiff(diff):
+    def __init__(self, old, new):
+        def ndiff_wrapper(a, b, fromfile, tofile, lineterm):
+            return difflib.ndiff(a, b)
+        super(ndiff, self).__init__(ndiff_wrapper, old, new)
+
+DIFF_FUNCS = dict(u = unified_diff,
+                  c = context_diff,
+                  n = ndiff)
+
+class replace(object):
+    def __init__(self, old, new, backup, backup_suffix):
+        self.__old = old
+        self.__new = new
+        self.__backup = backup
+        self.__backup_suffix = backup_suffix
+    def __ror__(self, input):
+        for file in input:
+            try:
+                f = open(file, 'r')
+                try:
+                    lines = f.read()
+                finally:
+                    f.close()
+
+                lines, changed = re.subn(self.__old, self.__new, lines)
+                if changed:
+                    if self.__backup:
+                        bak_file = '%s%s' % (file, self.__backup_suffix)
+                        if os.path.exists(bak_file):
+                            os.unlink(bak_file)
+                        os.rename(file, bak_file)
+                    f = open(file, 'w')
+                    try:
+                        f.write(lines)
+                    finally:
+                        f.close()
+
+                    yield file
+            except (IOError, OSError), e:
+                logging.error(e)
+
+class show_nothing(object):
+    def __ror__(self, input):
+        for o in input: pass
+show_nothing = show_nothing()
+
+class show_all(object):
+    def __init__(self, what = -1):
+        self.__what = what
+    def __ror__(self, input):
+        for o in input:
+            if isinstance(o, (types.TupleType, types.ListType)):
+                if self.__what >= 0:
+                    print o[self.__what]
+                else:
+                    for l in o:
+                        print l
+            else:
+                print o
+show = show_all()
+show_files = show_all(0)
+show_diff = show_all(1)
+
+def parse_arguments():
+    parser = OptionParser(usage = 'usage: %prog [options] pattern pattern [files]',
+                          version = '%%prog %s (c) 2008 %s' % (__version__, __author__))
+
+    parser.set_defaults(recursive = False)
+    parser.add_option('-r',
+                      action = 'store_true',
+                      dest = 'recursive',
+                      help = 'recursive')
+
+    parser.set_defaults(diff = False)
+    parser.add_option('-d', '--diff',
+                      action = 'store_true',
+                      dest = 'diff',
+                      help = 'generate diff')
+
+    parser.set_defaults(backup = False)
+    parser.add_option('-b',
+                      action = 'store_true',
+                      dest = 'backup',
+                      help = 'backup files')
+
+    parser.set_defaults(dry_run = False)
+    parser.add_option('-n', '--dry-run',
+                      action = 'store_true',
+                      dest = 'dry_run',
+                      help = 'do not perform actions, just print output')
+
+    parser.set_defaults(ignore_case = False)
+    parser.add_option('-I',
+                      action = 'store_true',
+                      dest = 'ignore_case',
+                      help = 'match ignore case')
+
+    parser.set_defaults(multiline = False)
+    parser.add_option('-M',
+                      action = 'store_true',
+                      dest = 'multiline',
+                      help = 'match multiline')
+
+    parser.set_defaults(quiet = False)
+    parser.add_option('-q',
+                      action = 'store_true',
+                      dest = 'quiet',
+                      help = 'be quiet')
+
+    parser.set_defaults(config_file = '~/.preplacerc')
+    parser.add_option('--config',
+                      dest = 'config_file',
+                      type = 'string',
+                      metavar = 'C',
+                      help = 'configuration file (default: ~/.preplacerc)')
+
+    parser.set_defaults(backup_suffix = '.orig')
+    parser.add_option('--suffix',
+                      dest = 'backup_suffix',
+                      type = 'string',
+                      metavar = 'S',
+                      help = 'backup suffix (default: .orig)')
+
+    parser.set_defaults(diff_format = 'u')
+    parser.add_option('--diff-format',
+                      dest = 'diff_format',
+                      type = 'string',
+                      metavar = 'DF',
+                      help = 'diff output format [(u)nified, (c)ontex, (n)diff] (default: (u)nified)')
+
+    (options, args) = parser.parse_args()
+
+    if len(args) < 2:
+        parser.error('you must specify the search/replace patterns!')
+
+    if not options.diff_format in DIFF_FUNCS:
+        parser.error('invalid diff format: %s' % options.diff_format)
+
+    if options.diff:
+        options.dry_run = True
+        assert options.dry_run == True, 'can not set dry run mode'
+
+    # setup logger
+    loglevel = logging.ERROR
+    if options.quiet:
+        loglevel = logging.CRITICAL
+    logging.basicConfig(format = '%(levelname)s: %(message)s', level = loglevel)
+
+    # split file patterns -> includes / excludes
+    includes = set([p for p in args[2:] if not p.startswith('~')])
+    excludes = set([p[1:] for p in args[2:] if p.startswith('~')])
+
+    # read additional includes / excludes from user config file
+    config_file = os.path.expanduser(options.config_file)
+    if os.path.isfile(config_file):
+        g = {}
+        l = {}
+        try:
+            execfile(config_file, g, l)
+        except Exception, e:
+            logging.error('error, invalid configuration file (%s): %s' % (config_file, e))
+            sys.exit(1)
+        cfi = l.get('INCLUDES', [])
+        cfe = l.get('EXCLUDES', [])
+        if not isinstance(cfi, (types.ListType, types.TupleType)):
+            cfi = [cfi]
+        if not isinstance(cfe, (types.ListType, types.TupleType)):
+            cfe = [cfe]
+        includes.update(cfi)
+        excludes.update(cfe)
+
+    # extract directories from includes, set . if nothing found
+    directories = (os.path.dirname(i) for i in includes if not os.path.isdir(i))
+    directories = set([d for d in directories if d and not d in excludes])
+    directories.update(d for d in includes if os.path.isdir(d))
+    if not directories: # add current directory, if no directory found in patterns
+        directories.add('.')
+    # strip directories from includes and filter out plain directories, won't work for /foo/*/bar/*.blub
+    includes = set([os.path.basename(p) for p in includes if not os.path.isdir(p)])
+    # normalize excludes
+    excludes = set([os.path.normpath(p) for p in excludes])
+
+    if not includes:
+        includes.add('*')
+
+    re_flags = []
+    if options.ignore_case:
+        re_flags.append(re.I)
+    if options.multiline:
+        re_flags.append(re.M)
+
+    try:
+        regex_old = re.compile(args[0], *re_flags)
+    except re.error, e:
+        parser.error('invalid search pattern (%s)' % e)
+
+    regex_new = args[1]
+
+    return (regex_old, regex_new, directories, includes, excludes, options)
+
+if __name__ == '__main__':
+    # Import Psyco if available
+    try:
+        import psyco
+        psyco.full()
+    except ImportError:
+        pass
+
+    try:
+        regex_old, regex_new, directories, includes, excludes, options = parse_arguments()
+
+        files = gen_files(directories, includes, excludes, options.recursive)
+
+        if options.quiet:
+            show_func = show_nothing
+        else:
+            if options.diff:
+                show_func = show_diff
+            else:
+                show_func = show_files
+
+        if options.dry_run:
+            files | DIFF_FUNCS[options.diff_format](regex_old, regex_new) | show_func
+        else:
+            files | replace(regex_old, regex_new, options.backup, options.backup_suffix) | show_func
+    except KeyboardInterrupt:
+        print 'Abort...'
+

@@ -1,0 +1,7 @@
+## vim:ft=zsh
+
+fpath=(
+    ~/.zsh/functions/pflags
+    $fpath
+)
+

@@ -1,0 +1,119 @@
+" ,----
+" | autocommands
+" `----
+
+if has("autocmd")
+    augroup mail
+        au!
+        au FileType mail set tw=70
+        au FileType mail set expandtab
+        au FileType mail set tabstop=3
+        au FileType mail set comments+=n:\|  " '|' is a quote char.
+        au FileType mail set comments+=n:%   " '%' as well.
+        " insert vim signature
+        au FileType mail let @"="X-Editor: Vim-".version." http://www.vim.org\n"|exe 'norm1G}""P'
+        "  replace empty quoted lines with empty lines
+        au FileType mail exe "normal :%s/^>[[:space:]\%\|\#>]\\+$//e\<CR>"
+        " remove own mail address from cc or bcc
+        au FileType mail exe "normal :g/^Bcc: \\|^Cc: /s/fire@downgra.de, //egi\<CR>"
+        au FileType mail exe "normal :g/^Bcc: \\|^Cc: /s/, fire@downgra.de//egi\<CR>"
+    augroup end
+
+    augroup news
+        au!
+        au FileType news set tw=60
+        au FileType news set expandtab
+        au FileType news set tabstop=3
+        au FileType news set dict=~/News/active
+        autocmd BufNewFile,BufRead  .followup,.article  iab Yme <cr>Rico Schiekel
+    augroup end
+
+    au BufReadCmd *.jar,*.war,*.ear,*.sar,*.rar call zip#Browse(expand("<amatch>"))
+
+    " jump to last line if viminfo exists
+    au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
+    " ensure every file does syntax highlighting (full)
+    au BufEnter * syntax sync fromstart
+    " never spell check TagList buffer
+    au BufEnter * if match(bufname("%"), "Tag_List") != -1 | set nospell | endif
+
+    " readonly files should make buffer unreadable
+    autocmd BufReadPost * call UpdateModifiable()
+
+    augroup skeleton
+        au!
+        au BufNewFile *.sh    silent! 0r ~/.vim/skel/sh
+        au BufNewFile *.zsh   silent! 0r ~/.vim/skel/zsh
+        au BufNewFile *.py    silent! 0r ~/.vim/skel/python
+        au BufNewFile *.rb    silent! 0r ~/.vim/skel/ruby
+        au BufNewFile *.html  silent! 0r ~/.vim/skel/html
+        au BufNewFile *.xhtml silent! 0r ~/.vim/skel/xhtml
+        au BufNewFile *.c,*.cc,*.cxx,*.cpp silent! 0r ~/.vim/skel/cc
+        au BufNewFile *.h,*.hh,*.hxx,*.hpp silent! 0r ~/.vim/skel/hh
+        au BufNewFile SConstruct,SConscript silent! 0r ~/.vim/skel/scons
+    augroup end 
+
+    if exists("+omnifunc")
+        au Filetype *
+            \   if &omnifunc == "" |
+            \           setlocal omnifunc=syntaxcomplete#Complete |
+            \   endif                   
+    endif
+
+    augroup xhtml
+        au!
+        au BufEnter *.xhtml set filetype=xhtml
+    augroup end
+
+    augroup complete
+        au!
+        au FileType python set omnifunc=pythoncomplete#Complete
+        au FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+        au FileType html set omnifunc=htmlcomplete#CompleteTags
+        au FileType css set omnifunc=csscomplete#CompleteCSS
+        au FileType xml set omnifunc=xmlcomplete#CompleteTags
+        au FileType php set omnifunc=phpcomplete#CompletePHP
+        au FileType c set omnifunc=ccomplete#Complete
+
+        au FileType python call LoadPythonPath()
+        au FileType python set tags+=$HOME/.vim/tags/python.ctags
+    augroup end
+
+    augroup python
+        au BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
+        au BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+    augroup end
+
+    augroup scons
+        au!
+        au BufEnter SConstruct,SConscript set syntax=python
+        au BufEnter SConstruct,SConscript compiler scons
+    augroup end
+
+    augroup c_cpp
+        au!
+        " to fuckin slow :/
+        " au BufWrite   *.c,*.cc,*.cxx,*.cpp,*.h,*.hh,*.hxx,*.hpp call UpdateCTags()
+        " au BufReadPre *.c,*.cc,*.cxx,*.cpp,*.h,*.hh,*.hxx,*.hpp set tags=~/.vim/ctags
+        au BufReadPre *.c,*.cc,*.cxx,*.cpp,*.h,*.hh,*.hxx,*.hpp compiler scons
+        au BufNewFile *.h,*.hh,*.hxx,*.hpp call AddIfndefGuard()
+    augroup end
+
+    " used to track the quickfix window 
+    augroup QFixToggle 
+      au! 
+      au BufWinEnter quickfix let g:qfix_win = bufnr("$") 
+      au BufWinLeave * if exists("g:qfix_win") && expand("<abuf>") == g:qfix_win | unlet! g:qfix_win | endif 
+    augroup end
+
+    au FileType vo_base source ~/.vim/statusline
+
+    "au VimEnter * silent! :call LoadSession()
+    "au VimLeave * :call MakeSession()
+
+    " on new files, goto end of file
+    au BufNewFile * exe "normal G"
+
+endif
+
+" vim:syntax=vim sw=4 ts=4 expandtab

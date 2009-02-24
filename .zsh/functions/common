@@ -1,0 +1,428 @@
+# list all user zsh functions
+function flist() {
+    grep -B 1 "^function" $HOME/.zsh/functions | grep -v "^\-\-$" | \
+        awk '{f=$0; getline; gsub(/ ?\(\)/, ":"); if(/^function/) { printf("--> %-20s", $2); if(f ~ /^#/) { gsub(/^#[:space:]*/, "", f); printf(" %s", f); }; printf("\n"); }}' | sort -u
+}
+
+# display a list of possible random passwords.
+function spwgen() {
+    if [[ "$1" == "-h" ]] {
+        echo "Usage: $0 <pwlen> <passwords>"
+    } else {
+        local pl="$1"
+        local np="$2"
+        test -z "$pl" && pl=12
+        test -z "$np" && np=10
+        perl <<EOPERL
+my @a = ("a".."z","A".."Z","0".."9",(split //, q{#@,.<>$%&()*^}));
+for (1.."$np") { 
+    print join "", map { \$a[rand @a] } (1.."$pl");
+    print qq{\n} 
+}
+EOPERL
+    }
+}
+
+# generate passwords with apg
+function sapg() {
+    if [[ -f $(which apg) ]] {
+        if [[ "$1" == "-h" ]] {
+            echo "usage: $0 <pwlen> <number of passwords>"
+        } else {
+            if [[ "$1" -le 2 ]] {
+                echo "password to small!"
+                return 
+            }
+            apg -x "$1" -m "$1" -n "$2" -t -M NCL
+        }
+    } else {
+        echo "apg not installed... aborting"
+    }
+}
+
+# print current settings of LC_*
+function plocale() {
+    print LC_ALL=$LC_ALL
+    print LANG=$LANG
+    print LC_CTYPE=$LC_CTYPE
+    print LC_NUMERIC=$LC_NUMERIC
+    print LC_TIME=$LC_TIME
+    print LC_COLLATE=$LC_COLLATE
+    print LC_MONETARY=$LC_MONETARY
+    print LC_MESSAGES=$LC_MESSAGES
+    print LC_PAPER=$LC_PAPER
+    print LC_NAME=$LC_NAME
+    print LC_ADDRESS=$LC_ADDRESS
+    print LC_TELEPHONE=$LC_TELEPHONE
+    print LC_MEASUREMENT=$LC_MEASUREMENT
+    print LC_IDENTIFICATION=$LC_IDENTIFICATION
+}
+
+# adds a directory to the PATH, without making duplicate entries
+function add_to_path() {
+    if [[ "$1" == "" ]]
+    then
+        echo "Usage: $0 directory"
+    else
+        unset SPACEPATH
+        local SPACEPATH
+        for i in  ${(s.:.)PATH}
+        do
+            SPACEPATH=( $SPACEPATH $i )
+        done
+        typeset -U SPACEPATH
+        if [[ -d "$1" ]]; then; SPACEPATH=( $SPACEPATH "$1" ); fi
+        PATH="`echo $SPACEPATH`"
+        PATH=${PATH:gs/ /:/}
+        export PATH
+        rehash
+    fi
+}
+
+# list all programs with prefix
+function plp() {
+    if [[ $# = 0 ]] {
+        echo "Usage:    $0 program"
+        echo "Example:  $0 zsh"
+        echo "Lists all occurrences of program in the current PATH."
+    } else {
+        ls -l ${^path}/*$1*(*N)
+    }
+}
+
+# Show the path from a symlink to its ultimate source.
+function follow_symlink() {
+    if [[ -e $1 || -h $1 ]]; then
+        file=$1
+    else
+        file=`which $1`
+    fi
+    if [[ -e $file || -L $file ]]; then
+        if [[ -L $file ]]; then
+            #echo `ls -ld $file | perl -ane 'print $F[7]'` '->'
+            follow_symlink `perl -le '$file = $ARGV[0];
+            $dest = readlink $file;
+            if ($dest !~ m{^/}) {
+                $file =~ s{(/?)[^/]*$}{$1$dest};
+            } else {
+                $file = $dest;
+            }
+            $file =~ s{/{2,}}{/}g;
+            while ($file =~ s{[^/]+/\.\./}{}) { ; }
+            $file =~ s{^(/\.\.)+}{};
+            print $file' $file`
+        else
+            ls -d $file
+        fi
+    else
+        echo $file
+    fi
+}
+
+# mkdir && cd
+function mcd() {
+    test -n "$1" && mkdir "$1" && cd "$1"
+}
+
+# cd && ls
+function cl() {
+    test -n "$1" && cd "$1" && ls
+}
+
+
+# new less
+function less() {
+    if [[ -f "$HOME/.vim/modes/less.vim" ]] {
+        if [[ -n "$1" ]] {
+            if [[ -r "$1" && -f "$1" ]] {
+                vim --cmd 'let no_plugin_maps = 1' -c "so $HOME/.vim/modes/less.vim" "$1"
+            } else {
+                echo "file not found or not readable!"
+            }
+        } else {
+            vim --cmd 'let no_plugin_maps = 1' -c "so $HOME/.vim/modes/less.vim" "-"
+        }
+    } else {
+        /usr/bin/less $@
+    }
+}
+
+# kernel related functionality
+function kernel() {
+    local ks="http://www.kernel.org";
+    local kver="$2"
+    local kmaj=$(echo "$kver" | awk -F"." '{print $1"."$2}')
+    case "$1" {
+        ("help" | "-h" | "--help")
+            echo "kernel help | -h | --help   - show this help"
+            echo "kernel [info]               - show latestet kernel versions"
+            echo "kernel get <ver>            - download kernel version x.x.x.x bz2 and sign file"
+            echo "kernel changelog | cl <ver> - show changelog form kernel version x.x.x.x"
+            echo
+        ;;
+        ("info" | "")
+            echo "latest kernel versions:"
+            wget -qO - "$ks/kdist/finger_banner"
+            echo
+        ;;
+        ("get")
+            case "$2" {
+                ("latest" | "lat" | "l")
+                    local l=$(wget -qO - "$ks/kdist/finger_banner" | grep "latest stable" | \
+                        awk -F":" '{sub(/^ *| *$/, "", $2); print $2}')
+                    test -n "$l" && echo "found latest kernel: $l" && kernel get "$l"
+                ;;
+                (*)
+                    test -z "$kver" && \
+                        kver=$(wget -qO - "$ks/kdist/finger_banner" | head -n 1 | awk -F':' '{gsub(/^ */, "", $2); print $2}')
+                    echo "get kernel: $kver"
+                    # get kernel sign key
+                    gpg --keyserver wwwkeys.pgp.net --recv-keys 0x517D0F0E
+                    if [[ -z $(echo "$kver" | grep -i "rc") ]] {
+                        local file="$ks/pub/linux/kernel/v$kmaj/linux-$kver.tar.bz2"
+                    } else {
+                        local file="$ks/pub/linux/kernel/v$kmaj/testing/linux-$kver.tar.bz2"
+                    }
+                    wget -c "$file"
+                    wget -c "$file"".sign"
+                    echo "check signature ..."
+                    test -f "linux-$kver.tar.bz2" -a -f "linux-$kver.tar.bz2.sign"  && \
+                        gpg --verify linux-$kver.tar.bz2.sign linux-$kver.tar.bz2 2>&1 
+                        #| \
+                        #    egrep -i "Unterschrift|good signature"
+                ;;
+            }
+        ;;
+        ("changelog" | "cl")
+            case "$2" {
+                ("latest" | "lat" | "l")
+                    local l=$(wget -qO - "$ks/kdist/finger_banner" | grep "latest stable" | \
+                        awk -F":" '{sub(/^ *| *$/, "", $2); print $2}')
+                    test -n "$l" && echo "found latest kernel: $l" && kernel changelog "$l"
+                ;;
+                (*)
+                    if [[ -z $(echo "$kver" | grep -i "rc") ]] {
+                        local file="$ks/pub/linux/kernel/v$kmaj/ChangeLog-$kver"
+                    } else {
+                        local file="$ks/pub/linux/kernel/v$kmaj/testing/ChangeLog-$kver"
+                    }
+                    echo "changelog topics for $kver:"
+                    wget -qO - "$file" | grep ".*\[.*\].*" | sed 's/^[ \t]*/  /'
+                ;;
+            }
+        ;;
+    }
+}
+
+# start the ssh tunnel if it is not running
+function ssh_tunnel() {
+    if [[ $(screen -ls | grep [0-9]*.tunnel | wc -l) -eq 0 ]] {
+        echo "starting tunnels ..."
+        screen -c $HOME/.screenrc-tunnel-$HOST -dmS tunnel
+    } else {
+        echo "tunnels already running!"
+    }
+}
+
+# improved cd
+function cd () {
+    if [[ -z $2 ]] {
+        if [[ -f $1 ]] {
+            builtin cd $1:h
+        } else {
+            builtin cd $1
+        }
+    } else {
+        if [[ -z $3 ]] {
+            builtin cd $1 $2
+        } else {
+            echo cd: too many arguments
+        }
+    }
+}
+
+# query dict.leo.org
+function leo() {
+    test -z "$1" && return
+    local ap="$*"
+    local stext=${ap// /%20}
+    lynx -source "http://dict.leo.org?lp=ende&search=$stext" | grep -i "TABLE.*/TABLE" | lynx -stdin -dump -width=$COLUMNS -nolist
+}
+
+# show date highlighted
+function cal() {
+    if [[ -n "$1" ]] {
+        /usr/bin/cal $*
+    } else {
+        var=$(/usr/bin/cal)
+        echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"
+    }
+}
+
+# check
+function chkregex() {
+    zmodload -i zsh/pcre
+    pcre_compile $1 && \
+    pcre_match $2 && echo "regex matches" || echo "regex does not match"
+}
+
+function fnew() {
+    print -l *(m-$1)
+}
+
+# Print the binary equivalent of a word (and back)
+function w2b() { 
+    perl -e 'print unpack "B*","'$1'"' ; perl -e 'print "\n"'
+}
+function b2w() { 
+    perl -e 'print pack "B*","'$1'"' ; perl -e 'print "\n"'
+}
+
+# Print the hex equivalent of a word (and back)
+function w2h() { 
+    perl -e 'print unpack "H*","'$1'"' ; perl -e 'print "\n"'
+}
+function h2w() { 
+    perl -e 'print pack "H*","'$1'"' ; perl -e 'print "\n"'
+}
+
+# some usefull html functions
+function html_links () {
+    perl -ne 'while ( m/"((www|ftp|http):\/\/.*?)"/gc ) { print $1, "\n"; }' $*
+}
+function html_hrefs () {
+    perl -ne 'while ( m/href="([^"]*)"/gc ) { print $1, "\n"; }' $*
+}
+function html_anames () {
+    perl -ne 'while ( m/a name="([^"]*)"/gc ) { print $1, "\n"; }' $*
+}
+function html_forms () {
+    perl -ne 'while ( m:(\</?(input|form|select|option).*?\>):gic ) { print $1, "\n"; }' $*
+}
+function html_strings () {
+    perl -ne 'while ( m/"(.*?)"/gc ) { print $1, "\n"; }' $*
+}
+function html_getanchors () {
+    perl -ne 'while ( m/«([^«»\n]+)»/gc ) { print $1, "\n"; }' $*
+}
+
+# show complete path of a file or pwd
+function path () {
+    echo -n $(builtin pwd)
+    if [[ -n "$1" ]] {
+        echo -n "/$*"
+    }
+    echo
+}
+
+# disable global alias and then execute command string given in $1 (e.g. DA "jam LL")
+function DA () {
+    disable -am '*'
+    command ${=1}
+    enable -am '*'
+}
+
+# set java environment variables. name of a prefered jdk can be given (e.g. jdk "1.5*ibm", jdk "sun", ...)
+function jdk () {
+    local wish="*$1*"
+    wish=${wish:#\*\*} # clear empty wish
+
+    local -a jlist
+    jlist=(/usr/lib/j2sdk*(/))
+
+    # find best match or use first in list
+    local jhome=${${(M)jlist:#${~wish}}[1]}
+    jhome=${jhome:=${jlist[1]}}
+
+    if [[ -d "${jhome}" ]] {
+        export JAVA_HOME="${jhome}"
+        CLASSPATH=
+        foreach i (${JAVA_HOME}/jre/lib/*.jar) CLASSPATH="${CLASSPATH}:$i"; end
+        export CLASSPATH
+        PATH=${(j|:|)${${(s|:|)PATH}:#*j2sdk*}} # remove old j2sdk path's
+        PATH="${JAVA_HOME}/bin:${PATH}"
+    }
+}
+
+# vim wrapper, which rewrite 'file:linenumber:' to 'file +linenumer' (e.g. usefull for gcc errors)
+function vi() {
+    local -a params
+    params=(${*//(#m):[0-9]*:/\\n+${MATCH//:/}}) # replace ':23:' to '\n+23'
+    params=(${(s|\n|)${(j|\n|)params}}) # join array using '\n', then split on all '\n'
+    /usr/bin/vim ${params}
+}
+
+# vim wrapper, which rewrite 'file:linenumber:' to 'file +linenumer' (e.g. usefull for gcc errors)
+function vim() {
+    vi $*
+}
+
+# ssh wrapper, which change an 'user@host:path' to '-t user@host "cd path && $SHELL"'
+function ssh() {
+    zmodload -i zsh/pcre
+
+    local -a params
+    local finished=0
+
+    foreach param (${(Oa)*});
+        if (( ! ${finished} )) && [[ "${param}" -pcre-match '((?:\w+@|)[\w.]+):(.*)' ]] {
+            cmd_str="cd ${match[2]} && $SHELL"
+            params+=(${cmd_str} ${match[1]} '-t')
+            finished=1
+        } else {
+            params+=($param)
+        }
+    end
+
+    /usr/bin/ssh ${(Oa)params}
+}
+
+# wrapper around cscope to delete generated cscope.out file
+function cscope() {
+    /usr/bin/cscope -R $*
+    test -f cscope.out && rm cscope.out
+}
+
+# play youtube url's with mplayer
+function play_yt() {
+    mplayer $(youtube-dl -g "$*")
+}
+
+# configure, build and install haskell packages
+function ghc_install() {
+    test ! -d /home/fire/.ghc/usr_src && mkdir -p /home/fire/.ghc/usr_src
+    runhaskell $1 configure --user --prefix=/home/fire/.ghc/usr_src
+    runhaskell $1 build
+    runhaskell $1 install
+}
+
+# sorted du -hsc
+function duhs() {
+    du -s $* | sort -n | cut -f 2- | while read a; do du -sh $a; done
+}
+
+# call svn update in given directory ($*) and popd back
+function svnup() {
+    cd "$*" && { svn update; popd }
+}
+
+# call svn status $2.. in a given directory ($1) and popd back
+function svnstat() {
+    cd "$1" && { shift; svn status $*; popd }
+}
+
+function distcc_activate() {
+    export DISTCC_HOSTS="raja/8 localhost/1"
+    export CCACHE_PREFIX="distcc"
+}
+
+function distcc_deactivate() {
+    unset DISTCC_HOSTS
+    unset CCACHE_PREFIX
+}
+
+function concat_pdf() {
+    local out="$1"
+    shift
+    gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE="$out" -dBATCH $*
+}

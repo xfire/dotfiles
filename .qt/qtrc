@@ -1,0 +1,43 @@
+[3.3]
+libraryPath=/usr/lib/kde3/plugins/:/home/fire/.kde/lib/kde3/plugins/:/usr/lib/qt3/plugins:/usr/bin
+
+[Font Substitutions]
+arial=helvetica^e
+helv=helvetica^e
+tms rmn=times^e
+
+[General]
+GUIEffects=none^e
+XIMInputStyle=On The Spot
+cursorFlashTime=1000
+doubleClickInterval=400
+embedFonts=true
+font=Sans Serif,8,-1,5,50,0,0,0,0,0
+fontPath=\0
+globalStrut=0^e0^e
+resolveSymlinks=true
+style=Polymer
+useRtlExtensions=false
+wheelScrollLines=3
+
+[KDE]
+contrast=7
+kdeAddedLibraryPaths=/home/fire/.kde/lib/kde3/plugins/^e/usr/lib/kde3/plugins/^e
+
+[KWinPalette]
+activeBackground=#418edc
+activeBlend=#6b91b8
+activeForeground=#ffffff
+activeTitleBtnBg=#dcdcdc
+frame=#efefef
+inactiveBackground=#9daaba
+inactiveBlend=#9daaba
+inactiveForeground=#dddddd
+inactiveFrame=#efefef
+inactiveTitleBtnBg=#dcdcdc
+
+[Palette]
+active=#000000^e#dddfe4^e#ffffff^e#ffffff^e#555555^e#c7c7c7^e#000000^e#ffffff^e#000000^e#ffffff^e#efefef^e#000000^e#678db2^e#ffffff^e#0000ee^e#52188b^e
+disabled=#808080^e#dddfe4^e#ffffff^e#ffffff^e#555555^e#c7c7c7^e#c7c7c7^e#ffffff^e#808080^e#ffffff^e#efefef^e#000000^e#567594^e#ffffff^e#0000ee^e#52188b^e
+inactive=#000000^e#dddfe4^e#ffffff^e#ffffff^e#555555^e#c7c7c7^e#000000^e#ffffff^e#000000^e#ffffff^e#efefef^e#000000^e#678db2^e#ffffff^e#0000ee^e#52188b^e
+

@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+export LC_CTYPE=de_DE
+
+x-terminal-emulator -name irssi_downgra_de -e irssi.downgra.de &
+

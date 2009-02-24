@@ -1,0 +1,21 @@
+RED="\\033[31m"
+GREEN="\\033[32m"
+YELLOW="\\033[33m"
+BLUE="\\033[34m"
+MAGENTA="\\033[35m"
+CYAN="\\033[36m"
+WHITE="\\033[37m"
+
+USERC="${WHITE}"
+if [ "$(id -u)" -eq 0 ]; then 
+    USERC="${RED}"
+fi
+
+if [ $TERM == "screen" ] ; then
+        SC="\[${CYAN}\][\[${WHITE}\]\${WINDOW}\[${CYAN}\]]"
+fi
+
+PS1="\\n\[${CYAN}\][\[${USERC}\]\\u@\\H\[${CYAN}\]]$SC \[${GREEN}\]\\t \\n\[${BLUE}\][\[${WHITE}\]\\w\[${BLUE}\]] \[${CYAN}\]->\[${WHITE}\] "
+export PS1
+export PS2="> "
+export PS3="+ "

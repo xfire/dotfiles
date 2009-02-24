@@ -1,0 +1,28 @@
+## vim:ft=zsh
+
+# 040514 press alt-b and get a "${«cursor»}"
+_bracket() { LBUFFER="\${$LBUFFER" ; RBUFFER="}$RBUFFER" }
+bindkey '\eb' _bracket
+zle -N _bracket
+
+# press alt-a to insert the actual date in the form yyyy-mm-dd
+_bkdate_dash() { BUFFER="$BUFFER$(date '+%F')"; CURSOR=$#BUFFER; }
+bindkey '\ea' _bkdate_dash
+zle -N _bkdate_dash
+
+# press alt-s to insert the actual date in the form yyyy_mm_dd
+_bkdate_underscore() { BUFFER="$BUFFER$(date '+'%Y_%m_%d'')"; CURSOR=$#BUFFER; }
+bindkey '\es' _bkdate_underscore
+zle -N _bkdate_underscore
+
+bindkey '^f' forward-word
+#  bindkey '^e' forward-word
+bindkey '^b' backward-word
+
+bindkey '\eP' quote-region
+# bindkey '^N' set-mark-command 
+
+# add edit command line feature ("alt-e")
+autoload      edit-command-line
+zle -N        edit-command-line
+bindkey '\ee' edit-command-line

@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# vim:syntax=sh:sw=4:ts=4:expandtab
+
+ctags -R -f python.ctags /usr/lib/python2.5/

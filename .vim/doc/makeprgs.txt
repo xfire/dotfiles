@@ -1,0 +1,38 @@
+*makeprgs*	Plugin for guessing the makeprg to use
+
+If you work on several open source projects, chances are you will come across
+Makefile, Ant or SCons based build systems. If you have <F5> mapped to :make
+
+	:nmap <F5> :make<CR>
+
+then it would be nice if the correct build program were used. That is the
+purpose of this script. It also maps <F5> as mentioned above.
+
+It checks if the file SConstruct or SConscript is in the current directory and
+if so sets the makeprg to scons or scons -u for scripts.
+
+If GNUmakefile, makefile or Makefile are found in the current directory, then
+the makeprg value is set to make.
+
+If build.xml is found, then "ant" is the assumed compiler - i.e. 
+	:compiler ant
+is called.
+
+							*makeprgs-settings*
+It is possible to extend the types supported by setting the variable
+"makeprgs_make_types". For example, if a file named "Foobuild" is present we
+should use the foobld program, then this line would work:
+
+ let makeprgs_make_types={ 'glob': 'Foobuild', 'makeprg': 'foobld' }
+
+Dictionary values used are:
+
+glob    - a list or string - glob pattern for the file to search for.
+makeprg - string - the value to set makeprg to
+compile - string - the value to set :compile to
+
+The makeprg or compile values can be mixed, to set a compile chain and makeprg
+together for a particular file type. The makeprgs_make_types can be set to a
+list of dictionaries if several custom makeprgs are required.
+
+ vim:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ts=8:ft=help:norl:

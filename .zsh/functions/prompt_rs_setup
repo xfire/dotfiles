@@ -1,0 +1,76 @@
+## vim:ft=zsh
+
+prompt_rs_help () {
+    cat <<'EOF'
+  prompt fire
+EOF
+}
+
+#  function prompt_rs_preexec () {
+#      if [[ "$TERM" == "screen" ]]; then
+#          local CMD=${1[(wr)^(<*|*=*|sudo|exec|-*)]}
+#          print -Pn "\ek$CMD\e\\"
+#      fi
+#  }
+
+prompt_rs_precmd () {
+    vcs_info
+    pflags
+}
+
+prompt_rs_setup () {
+    autoload -Uz vcs_info
+    autoload -Uz pflags
+
+    setopt extended_glob
+    setopt prompt_subst
+
+    autoload colors zsh/terminfo
+    if [[ "$terminfo[colors]" -ge 8 ]]; then
+        colors
+    fi
+    for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
+        eval PR_BOLD_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
+        eval PR_$color='%{$fg[${(L)color}]%}'
+        (( count = $count + 1 ))
+    done
+    PR_NO_COLOR="%{$terminfo[sgr0]%}"
+
+
+    zstyle ':vcs_info:*' disable cdv darcs mtn p4 svk tla
+    zstyle ':vcs_info:*' formats " ${PR_CYAN}(${PR_NO_COLOR}%s${PR_CYAN})${PR_YELLOW}-${PR_CYAN}[${PR_GREEN}%b${PR_CYAN}]${PR_NO_COLOR}%}"
+    zstyle ':vcs_info:*' actionformats " ${PR_CYAN}(${PR_NO_COLOR}%s${PR_CYAN})${PR_YELLOW}-${PR_CYAN}[${PR_GREEN}%b${PR_YELLOW}|${PR_RED}%a${PR_CYAN}]${PR_NO_COLOR}"
+    zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat "%b${PR_RED}:${PR_YELLOW}%r"
+
+    zstyle ':pflags:*' enable distcc
+    zstyle ':pflags:*' format " ${PR_CYAN}(${YELLOW}%f${PR_CYAN})$PR_NO_COLOR"
+
+    L_WHERE=$PR_CYAN"["%(!.$PR_RED.$PR_NO_COLOR)"%n@%m"$PR_CYAN"]"$PR_NO_COLOR
+    L_DATE_TIME=$PR_GREEN"%D{%Y-%m-%d} %*"$PR_NO_COLOR
+    L_PATH=$PR_BLUE"["$PR_NO_COLOR"%~"$PR_BLUE"]"$PR_NO_COLOR" "$PR_CYAN"->"$PR_NO_COLOR
+    L_HIST=$PR_CYAN"("$PR_YELLOW"%!"$PR_CYAN")"$PR_NO_COLOR
+    L_RETVAL=%(?..$PR_CYAN"{"$PR_RED"%?"$PR_CYAN"}"$PR_NO_COLOR" ")
+
+    L_SCREEN=
+    L_STITLE=
+    L_TITLEBAR=
+    case "$TERM" {
+        (xterm* | rxvt*)
+            L_TITLEBAR=$'%{\e]0;%(!.[ROOT] | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\a%}'
+        ;;
+        (screen)
+            L_SCREEN=$PR_CYAN"["$PR_NO_COLOR$WINDOW$PR_CYAN"]"$PR_NO_COLOR" "
+            L_TITLEBAR=$'%{\e_screen \005 (\005t) | %(!.[ROOT] | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\e\\%}'
+            # L_STITLE=$'%{\ekzsh\e\\%}'
+            L_STITLE=$'%{\ek%~\e\\%}'
+        ;;
+    }
+
+    PROMPT="$L_STITLE${(e)L_TITLEBAR}$L_WHERE $L_SCREEN$L_HIST $L_RETVAL$L_DATE_TIME"'${pflags_msg}''${vcs_info_msg_0_}'"
+"$L_PATH" "
+
+    precmd () { prompt_rs_precmd }
+    preexec () { }
+}
+
+prompt_rs_setup "$@"

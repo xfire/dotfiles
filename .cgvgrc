@@ -1,0 +1,50 @@
+# Per-user configuration file for cgvg
+# This file is meant to go in $HOME/.cgvgrc
+# Currently the only options are the ones you see below.
+
+# The editor to use.  If not here, the script will use the $EDITOR
+# environment varable, and if not there either it'll use the hard-coded
+# default editor.
+EDITOR=vim
+
+# Default list of files to search through
+#SEARCH=(^Make.*$|^.*\.([chs]|cc|hh|cpp|c|h|hpp|hxx|p[lm]|java|php|.*sh|idl)$)
+SEARCH=(.*$)
+
+# Default list of stuff to exclude from the search
+EXCLUDE=^SCCS$|^RCS$|^tags$|\.make\.state|\.svn
+
+# Maximum age of a log file before it's deleted.
+#AGE=30
+
+# Colors on or off (1 or 0)
+COLORS=1
+
+# Do we alternate bold and non-bold (COLORS=1 required)
+BOLD_ALTERNATE=1
+
+# Do we want colon mode on?
+COLON=0
+
+# Do we enable to built-in pager?
+PAGER=0
+
+# Colors for each of the rows.  Acceptable values are currently:
+# 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan' and 'white'
+# and 'b_color' for bold of that color (eg: 'b_red', 'b_blue')...
+
+# Entry index number
+#COLOR1=cyan
+
+# Entry filename & path
+#COLOR2=blue
+
+# Entry line number
+#COLOR3=red
+
+# Entry text
+#COLOR4=green
+
+# Pager Prompt
+#COLOR5=b_white
+

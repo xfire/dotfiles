@@ -1,0 +1,25 @@
+[user]
+	name = Rico Schiekel
+	email = fire@downgra.de
+[gui]
+	fontui = -family clean -size 9 -weight bold -slant roman -underline 0 -overstrike 0
+	fontdiff = -family \"courier new\" -size 9 -weight normal -slant roman -underline 0 -overstrike 0
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[alias]
+    st = status
+    ci = commit
+    br = branch
+    co = checkout
+    df = diff
+    lg = log -p
+    who = shortlog -s --
+	incoming = !git-incoming
+	outgoing = !git-outgoing
+    addremove = !git-addremove
+    wtf = !git-wtf -a -l
+    costats = shortlog -s -n --no-merges 
+[diff "odf"]
+    textconv=odt2txt

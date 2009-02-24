@@ -1,0 +1,8 @@
+#!/bin/bash
+
+autossh -M 0 -o ServerAliveInterval=60 -T -N tun.osd.shell.spamt.net &
+TPID=$!
+
+autossh -M 0 -o ServerAliveInterval=60 -t shell.spamt.net "screen -d -x irssi"
+
+kill $TPID

@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+#
+# dzen2_multiscreen
+#   read from stdin and forward all data to n dzen2 instances, where
+#   n is the number of available x11 screens.
+#
+#   all parameters to this script are used as dzen2 parameters, except 
+#   the -xs parameter, which is set to the right screen.
+#
+#   the number of available x11 screens is determined by:
+#       1) check if the environment variable XINERAMA_SCREENS is available
+#       2) parsing the output of xrandr.
+#
+# author: Rico Schiekel <fire@downgra.de>
+#
+# vim:syntax=python:sw=4:ts=4:expandtab
+
+import os
+import sys
+import re
+import subprocess
+import types
+
+processes = []
+
+screens = os.environ.get('XINERAMA_SCREENS')
+if isinstance(screens, types.StringTypes):
+    try:
+        screens = int(screens)
+    except ValueError:
+        screens = 0
+
+if not screens:
+    info = subprocess.Popen("xrandr", stdout=subprocess.PIPE)
+    screens = ''.join(info.stdout.readlines())
+    info.wait()
+    screens = len(re.findall(" connected ", screens, re.M))
+
+for screen in range(0, screens):
+    processes.append(subprocess.Popen(['dzen2'] + sys.argv[1:] + ['-xs', str(screen + 1)],
+                                      shell=False,
+                                      stdin=subprocess.PIPE,
+                                      close_fds=True))
+
+while 1:
+    line = sys.stdin.readline()
+    if not line:
+        break
+    for p in processes:
+        p.stdin.write(line)
+

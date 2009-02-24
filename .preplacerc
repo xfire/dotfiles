@@ -1,0 +1,1 @@
+EXCLUDES = ['*svn*', '*.o', '*.a', '*.pyc']

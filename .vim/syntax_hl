@@ -1,0 +1,38 @@
+"" ----------------------------------------------------------------------------
+""  Syntaxhighlighting/Farben
+"" ----------------------------------------------------------------------------
+
+" Syntaxhighlighting automatisch einschalten (funktioniert nur, wenn das
+" einkommpilliert wurde).
+if has("syntax")
+        syntax on
+endif
+
+" Wie sehen Kommentare aus? (Dies ist ein Komma-Getrennte Liste von
+" Zeichen, die Kommentare einleiten können.) Vor dem Zeichen steht noch ein
+" spezielles Flag. Informationen über die Bedeutung dieser Flags kann man mit
+" »:help format-comments«. 
+set comments=b:#,b:%,b:-,n:>,n:),b:\|
+
+" Sprachen, die gehighlightet werden sollen
+set highlight=8r,db,es,hs,mb,Mr,nu,rs,sr,tb,vr,ws
+
+set background=dark
+
+colorscheme desert
+
+hi TabLine     cterm=inverse,bold ctermbg=white ctermfg=darkgray
+hi TabLineSel  cterm=bold ctermfg=red ctermbg=lightgray
+hi TabLineFill cterm=inverse,bold ctermfg=darkgray
+hi MatchParen  cterm=bold ctermbg=none ctermfg=red
+
+hi ShowMarksHLl cterm=bold ctermbg=none ctermfg=blue
+hi ShowMarksHLu cterm=bold ctermbg=none ctermfg=red
+hi ShowMarksHLo cterm=bold ctermbg=none ctermfg=yellow
+hi ShowMarksHLm cterm=bold ctermbg=none ctermfg=green
+hi SignColumn   cterm=bold ctermbg=none
+
+hi CursorLine   cterm=none ctermfg=7
+
+" vim:syntax=vim sw=4 ts=4 expandtab
+

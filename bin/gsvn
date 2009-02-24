@@ -1,0 +1,65 @@
+#!/bin/sh
+
+USAGE='[help|status|info|update|log|blame|commit|dcommit|switch]'
+LONG_USAGE='gsvn help
+        print this long help message
+gsvn status
+        shows information about current working dir status.
+gsvn info
+        shows information about a file or directory similar to 
+        what ‘svn info´ provides. (git svn info)
+gsvn update
+        fetches revisions from the SVN parent of the current 
+        HEAD and rebases the current (uncommitted to SVN) work
+        against it. (git svn rebase)
+gsvn log
+        show svn log messages (git svn log)
+gsvn blame
+        show what revision and author last modified each line
+        of a file. (git svn blame)
+gsvn dcommit
+        push all local commits into the svn repository.
+        (git svn dcommit)
+gsvn switch
+        switch working copy to trunk, a branch or a tag'
+OPTIONS_SPEC=
+SUBDIRECTORY_OK=yes
+. git-sh-setup
+
+require_work_tree
+
+function show_current() {
+    # git reflog --all | grep "updating HEAD" | head -n 1 | sed 's|^[^:]*: \([^:]*\): updating HEAD$|\1|'
+    git reflog --all | grep "updating HEAD" | head -n 1 | sed 's|^[^.]*\.\.\. \([^:]*:[^:]*\): updating HEAD$|\1|'
+}
+
+case "$#" in
+0)
+    usage ;;
+*)
+    cmd="$1"
+    shift
+    case "$cmd" in
+        help)
+            usage ;;
+        status)
+            echo "# On svn:" $(show_current)
+            git status "$@" ;;
+        info)
+            git svn info "$@" ;;
+        up|update)
+            git svn rebase "$@" ;;
+        log)
+            git svn log "$@" ;;
+        blame)
+            git svn blame "$@" ;;
+        dcommit)
+            git svn dcommit "$@" ;;
+        switch)
+            git reset --hard "$@"
+            echo "now on svn:" $(show_current)
+            ;;
+        *)
+            git "$cmd" "$@" ;;
+    esac
+esac

@@ -1,0 +1,18 @@
+#!/bin/zsh
+#
+# syntax: getpw [-l=location (work/priv/...)] [-f=file] regex
+
+LOC="work"
+FILE="passwords"
+
+repeat $(($# - 1)) do
+    test -n "${1:#^-l=*}" && LOC="${1#-l=}" && shift
+    test -n "${1:#^-f=*}" && FILE="${1#-f=}" && shift
+done
+
+PWFILE="$HOME/docz/$LOC/passwords/$FILE.gpg"
+if [[ -f "$PWFILE" ]] {
+    gpg --decrypt "$PWFILE" 2>/dev/null | egrep "$1"
+} else {
+    echo "can not open $PWFILE"
+}

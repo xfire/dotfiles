@@ -1,0 +1,6 @@
+## vim:ft=zsh
+
+autoload -U promptinit;
+promptinit
+prompt rs
+

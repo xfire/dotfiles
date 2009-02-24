@@ -1,0 +1,10 @@
+[General]
+commit_args=
+commit_template_file_path=.git/commit-template
+exclude_file_path=.git/info/exclude
+exclude_per_directory_file_name=.gitignore
+external_diff_viewer=kompare
+format_patch_args=
+patch_flags=6496
+recent_open_repos=/home/fire/work/src/jitertools,/tmp/b/svn,/tmp/a/work,/home/fire/.home_rev_ctrl,/tmp/c
+

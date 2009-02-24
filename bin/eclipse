@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# vim:syntax=sh:sw=4:ts=4:expandtab
+
+export GTK2_RC_FILES=/usr/share/themes/Clearlooks/gtk-2.0/gtkrc:/home/fire/.gtkrc-2.0-eclipse
+/opt/eclipse/eclipse

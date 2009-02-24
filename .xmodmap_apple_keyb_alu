@@ -1,0 +1,22 @@
+! swap alt and command
+clear mod1
+clear mod4
+keycode 133 = Alt_L
+keycode 134 = Alt_R
+keycode 64 = Super_L
+keycode 108 = Super_R
+keycode 108 = Multi_key
+!keycode 107 = Delete
+add mod1 = Alt_L Alt_R
+add mod4 = Super_L Super_R
+
+! add F13 as insert key
+keycode 191 = Insert
+
+! swap ~ and < key
+keycode 49 = less greater bar brokenbar bar brokenbar
+keycode 94 = grave asciitilde
+
+! capslock to escape
+keycode 66 = Escape
+

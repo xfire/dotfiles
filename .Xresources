@@ -1,0 +1,105 @@
+!! --------------------------------------------------------------
+!! mouse cursor config
+Xcursor.theme:                  RevRedux2
+
+!! --------------------------------------------------------------
+!! urxvt config
+URxvt.termName        : rxvt
+URxvt.loginShell      : true
+URxvt.cutchars        :  ''""&()*,;<=>?[]^{|}
+URxvt.perl-ext-common : matcher
+URxvt.urlLauncher     : launchurl
+URxvt.perl-lib        : /usr/lib/urxvt/perl/
+URxvt.scrollBar_right : false
+URxvt.scrollBar       : false
+URxvt.saveLines       : 3000
+URxvt.urgentOnBell    : true
+!URxvt.borderLess      : true
+!! URxvt.font            : xft:Terminus:pixelsize=12:antialias=false
+!! URxvt.font            : -windows-montecarlo-medium-*-normal-*-11-*-*-*-*-*-*-*
+!! URxvt.font            : -xos4-terminus-*-r-*-*-12-120-*-*-*-*-iso8859-1
+!! URxvt.font            : -*-montecarlo-medium-*-*-*-11-110-*-*-*-*-*-*
+URxvt.font            : -*-proggytiny-*-*-*-*-10-80-*-*-*-*-*-*
+URxvt.boldFont        : -*-proggytiny-*-*-*-*-10-80-*-*-*-*-*-*
+URxvt.transparent     : true
+URxvt.tintColor       : #BD85BA
+URxvt.shading         : 30
+URxvt.blendType       : true
+URxvt.intensityStyles : false
+URxvt.foreground      : white
+URxvt.background      : #000020
+! URxvt.color0          : #2f4f4f
+! URxvt.color1          : #cd0000
+! URxvt.color2          : #8baf83
+! URxvt.color3          : #b7b789
+! URxvt.color4          : #414171
+! URxvt.color5          : #b789b7
+! URxvt.color6          : #89b7b7
+! URxvt.color7          : #c4c4c4
+! URxvt.color8          : #404040
+! URxvt.color9          : #ff0000
+! URxvt.color10         : #a4dba4
+! URxvt.color11         : #e8e8ae
+! URxvt.color12         : #4186be
+! URxvt.color13         : #e8aee8
+! URxvt.color14         : #a8e0e0
+! URxvt.color15         : #f5f5f5
+
+URxvt.color0          : #2F2E2D
+URxvt.color1          : #cd0000
+URxvt.color2          : #A0A57E
+URxvt.color3          : #D1A375
+URxvt.color4          : #7985A3
+URxvt.color5          : #AB716D
+URxvt.color6          : #98B9B1
+URxvt.color7          : #D0D0D0
+URxvt.color8          : #4A4845
+URxvt.color9          : #ff0000
+URxvt.color10         : #B6B99D
+URxvt.color11         : #DEBC9C
+URxvt.color12         : #98A1B9
+URxvt.color13         : #BE918E
+URxvt.color14         : #CBE6CB
+URxvt.color15         : #EFEFEF
+
+!! --------------------------------------------------------------
+!! xterm config
+!xterm.termName   : xterm
+!xterm.background : #000000
+!xterm.foreground : #A8A8A8
+
+!! --------------------------------------------------------------
+!! aterm config
+Aterm.foreground      : white
+Aterm.background      : #000020
+Aterm.scrollBar       : false
+Aterm.loginShell      : true
+Aterm.transparent     : true
+Aterm.tintingType     : true
+Aterm.tinting         : #BD85BA
+Aterm.shading         : 35
+Aterm.title           : terminal
+Aterm.name            : aterm
+Aterm.iconName        : terminal
+!Aterm.font            : -xos4-terminus-*-r-*-*-12-120-*-*-*-*-iso8859-*
+Aterm.font            : -*-proggytiny-*-*-*-*-10-80-*-*-*-*-*-*
+Aterm.saveLines       : 3000
+Aterm.scrollTtyOutput : false
+Aterm.scrollKeypress  : false
+Aterm.color0          : #000000
+Aterm.color1          : #cd0000
+Aterm.color2          : #8baf83
+Aterm.color3          : #b7b789
+Aterm.color4          : #414171
+Aterm.color5          : #b789b7
+Aterm.color6          : #89b7b7
+Aterm.color7          : #c4c4c4
+Aterm.color8          : #404040
+Aterm.color9          : #ff0000
+Aterm.color10         : #a4dba4
+Aterm.color11         : #e8e8ae
+Aterm.color12         : #4186be
+Aterm.color13         : #e8aee8
+Aterm.color14         : #a8e0e0
+Aterm.color15         : #f5f5f5
+

@@ -1,0 +1,15 @@
+## vim:ft=zsh
+
+function add_hash() {
+    test -d "$1" && hash -d $2="$1"
+}
+
+add_hash "/usr/share/doc" doc
+add_hash "/var/log" log
+add_hash "/usr/src/" usrc
+add_hash "/workspace/src" wsrc
+add_hash "/workspace/src/lbcs2/" lbcs2
+add_hash "/workspace/src/playground/" playground
+add_hash "/workspace/src/efl/" efl
+
+unfunction add_hash

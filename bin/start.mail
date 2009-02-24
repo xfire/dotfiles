@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+export LC_CTYPE=de_DE
+
+x-terminal-emulator -name mail_downgrade -e /usr/bin/mutt -F ~/.mutt/profiles/downgrade &
+

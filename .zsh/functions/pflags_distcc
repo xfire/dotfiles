@@ -1,0 +1,2 @@
+[[ -n "${CCACHE_PREFIX:-}" && -z "${CCACHE_PREFIX:#distcc}" ]] && flags="$flags"d
+return 0

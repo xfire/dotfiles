@@ -1,0 +1,6 @@
+class ${class name}${generalization} {
+    public:
+        ${class name}();
+        ~${class name}() {}
+    ${cursor}
+};

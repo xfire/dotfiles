@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+export LC_CTYPE=de_DE
+
+x-terminal-emulator -name logger_osd -e /home/fire/bin/colortail /home/fire/.osd_log &
+sleep 0.5s
+x-terminal-emulator -name logger_syslog -e /home/fire/bin/colortail /var/log/syslog &
+
