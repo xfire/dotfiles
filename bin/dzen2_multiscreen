@@ -8,8 +8,9 @@
 #   the -xs parameter, which is set to the right screen.
 #
 #   the number of available x11 screens is determined by:
-#       1) check if the environment variable XINERAMA_SCREENS is available
-#       2) parsing the output of xrandr.
+#       1) check if there is a file /tmp/XINERAMA_SCREENS-<user>
+#       2) check if the environment variable XINERAMA_SCREENS is available
+#       3) parsing the output of xrandr.
 #
 # author: Rico Schiekel <fire@downgra.de>
 #
@@ -23,7 +24,14 @@ import types
 
 processes = []
 
-screens = os.environ.get('XINERAMA_SCREENS')
+user = os.environ.get('USER')
+infofile = '/tmp/XINERAMA_SCREENS-%s' % user
+
+if os.path.isfile(infofile):
+    screens = file(infofile, 'r').readline().strip()
+else:
+    screens = os.environ.get('XINERAMA_SCREENS')
+
 if isinstance(screens, types.StringTypes):
     try:
         screens = int(screens)
