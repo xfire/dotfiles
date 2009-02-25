@@ -12,9 +12,6 @@ PATH=$HOME/bin:$PATH
 
 if [[ -n "$(xrandr | grep 'VGA connected')" ]]; then
     xrandr --output VGA --right-of LVDS --auto
-    export XINERAMA_SCREENS=2
-else
-    export XINERAMA_SCREENS=1
 fi
 
 xhost +local:
