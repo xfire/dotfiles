@@ -125,6 +125,7 @@ export SVN_EDITOR='/home/fire/bin/svneditor'
 # path setup
 export PATH="$HOME/bin:$PATH"
 export PYTHONPATH="$HOME/.python/"
+export GEM_PATH=/var/lib/gems/1.8:/home/fire/.localgems/
 #
 
 # setup ssh keyagent
