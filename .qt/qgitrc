@@ -6,5 +6,5 @@ exclude_per_directory_file_name=.gitignore
 external_diff_viewer=kompare
 format_patch_args=
 patch_flags=6496
-recent_open_repos=/home/fire/work/src/jitertools,/tmp/b/svn,/tmp/a/work,/home/fire/.home_rev_ctrl,/tmp/c
+recent_open_repos=/home/fire/work/src/growl,/home/fire/work/src/jitertools,/tmp/c/pydzen.git,/tmp/c/preplace.git,/tmp/b/svn,/tmp/a/work,/home/fire/.home_rev_ctrl
 
