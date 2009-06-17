@@ -20,7 +20,6 @@ if [[ -d "$ZSHDIR" ]] {
     load_config "$ZSHDIR/bindkey"
     load_config "$ZSHDIR/completion"
     load_config "$ZSHDIR/virtualenvwrapper"
-    load_config "$ZSHDIR/sandboxwrapper"
     load_config "$ZSHDIR/extensions"
     
     if [[ -f "$ZSHDIR/prompt" ]] {
