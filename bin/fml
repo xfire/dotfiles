@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+# Ugly script to get a random quote from www.fmylife.com
+# Yeah, so ugly I dont even bother catching exceptions
+#
+# Meant to run on python 2.5++ as I'm using the inbuilt ElementTree package
+#
+ 
+import urllib
+import xml.etree.ElementTree as ET
+import cStringIO
+ 
+FML_SITE_RANDOM = 'http://api.betacie.com/view/random'
+paramsDict = { 'language':'en', 'key':'readonly'}
+encodedParams = urllib.urlencode(paramsDict)
+ 
+try:
+	fmldata = urllib.urlopen(FML_SITE_RANDOM, encodedParams).read()
+	fmldata = ET.XML(fmldata)
+	author = fmldata.findtext('items/item/author').strip()
+	if len(author) == 0:
+		author = 'anonymous'
+ 
+	peopleAgreed = fmldata.findtext('items/item/agree').strip()
+	peopleDisagreed = fmldata.findtext('items/item/deserved').strip()
+	story = fmldata.findtext('items/item/text').strip()
+ 
+	print "Think your life sucks?\n"
+	print 'This happened to ' + author + '.'
+	print ''
+	print story + '\n'
+	print peopleAgreed + ' reader(s) agreed'
+	print peopleDisagreed + ' reader(s) have seen worse. '
+	print
+	print 'F*** My Life'
+	print 'http://www.fmylife.com'
+ 
+ 
+except:
+	msg = '''Whoops!!! Some error, probably your connection. I guess
+	your life sucks after all.... :('''
+	print msg
