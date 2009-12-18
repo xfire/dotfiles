@@ -24,7 +24,7 @@ try:
     typ, data = connection.list()
     if typ == 'OK':
         mblist = (mailbox_name(d) for d in data)
-        for mb in sorted([mb for mb in mblist if mb and not 'spam' in mb]):
-            print '=%s' % mb,
+        for mb in sorted([mb for mb in mblist if mb]):
+            print mb
 finally:
     connection.logout()

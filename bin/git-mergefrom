@@ -1,0 +1,95 @@
+#! /usr/bin/env ruby
+ 
+require "open3" # for reading stderr
+ 
+# A dirt-simple script to merge a pull request from someone on github.
+# Andre Lewis, 2009
+#
+# Assumptions:
+# 1. you're currently working on master
+# 2. you've already reviewed the pull request and have decided to include it.
+#
+# usage: 
+#  mergefrom git://github.com/foo/bar.git 
+#
+# or, optionally, to merge a specific commit:
+#
+#  mergefrom git://github.com/foo/bar.git 25fe7ea
+#
+#
+# What it does:
+# 1. adds the remote repo
+# 2. checks out the remote repo as a local branch 
+# 3. pulls from the remote master or specific commit you provided
+# 4. switches back to master
+# 5. (with your confirmation) merges the just-checked out branch
+# 6. (with your confirmation) deletes your just-checked out branch
+ 
+ 
+url=ARGV[0] # Looks like: git://github.com/andre/geokit-gem.git
+commit=ARGV[1] # Looks like: 25fe7ea
+ 
+# quick method to execute a command and print the output
+def exe(cmd)
+  puts "EXECUTING: #{cmd}"
+  failed=nil
+  Open3.popen3(cmd) do |stdin, stdout, stderr| 
+    out=stdout.read
+    err=stderr.read
+    puts out if out !=''
+    puts err if err !=''
+    failed = err=~/^fatal|^error/i
+  end
+  
+  # give an option to continue if something went wrong
+  if failed
+    puts "Continue? [y|N]"
+    s=STDIN.gets.chomp.downcase
+    if s!='y'
+      puts "STOPPING ..."
+      exit
+    end
+  end
+end
+ 
+# bail if the url is blank or not a git url
+if url.nil? || !url =~/^git/
+  puts "USAGE: mergefrom git://github.com/foo/bar.git"
+  puts "optionally, include a specific commit as the second argument: mergefrom git://github.com/foo/bar.git 25fe7ea"
+  exit
+end  
+ 
+# format the commit if the commit argument is non-blank
+commit = (commit.nil? || commit == '') ? '' : ":#{commit}"
+ 
+# extract the branchname, or create it from the url
+url=~/^git:\/\/github.com\/(\w+)\//
+branch=$1 || url.gsub('git:','').gsub(/\W/i,'')
+ 
+puts "checking out #{url} as local branch #{branch}"
+ 
+exe "git remote add -f #{branch} #{url}"
+exe "git checkout -b #{branch}/master"
+exe "git pull #{branch} master#{commit}"
+exe "git checkout master"
+ 
+merge_command = "git merge #{branch}/master"
+delete_branch_command = "git merge #{branch}/master"
+ 
+puts "Checked out the branch, and now switched back to master. Do you want to merge now? [Y|n]"
+s=STDIN.gets.chomp.downcase
+if s != 'n'
+  exe merge_command
+  puts "merged. delete branch? [Y|n]"
+  s=STDIN.gets.chomp.downcase
+  if s != 'n'
+    exe delete_branch_command
+  else  
+    puts "to delete: #{delete_branch_command}"
+  end  
+else
+  puts "to merge: #{merge_command}"
+  puts "to delete_branch: #{delete_branch_command}"
+end
+puts "to push: git push"
+puts "DONE"
