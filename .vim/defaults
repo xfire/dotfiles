@@ -178,4 +178,3 @@ let g:jpTemplateDir = '/home/fire/.vim/jptemplates'
 let g:jpTemplateKey = '[Z'
 
 " vim:syntax=vim sw=4 ts=4 expandtab
-
