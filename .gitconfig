@@ -5,6 +5,8 @@
 	fontui = -family clean -size 9 -weight bold -slant roman -underline 0 -overstrike 0
 	fontdiff = -family \"courier new\" -size 9 -weight normal -slant roman -underline 0 -overstrike 0
 [color]
+    ui = auto
+    wtf = auto
 	diff = auto
 	status = auto
 	branch = auto
@@ -14,12 +16,19 @@
     br = branch
     co = checkout
     df = diff
-    lg = log -p
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
     who = shortlog -s --
 	incoming = !git-incoming
 	outgoing = !git-outgoing
     addremove = !git-addremove
     wtf = !git-wtf -a -l
     costats = shortlog -s -n --no-merges 
+    publish = !git-publish-branch
+    mergefrom = !git-mergefrom
+    push-brach = !git-push-branch
 [diff "odf"]
     textconv=odt2txt
+[push]
+	default = matching
+[merge]
+	summary = true
