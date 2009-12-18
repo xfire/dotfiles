@@ -10,8 +10,13 @@ PATH=$HOME/bin:$PATH
 #  xrandr --output LVDS --off
 #  xrandr --output VGA --mode 1600x1200
 
-if [[ -n "$(xrandr | grep 'VGA connected')" ]]; then
-    xrandr --output VGA --right-of LVDS --auto
+if [ -n "$(xrandr | grep 'VGA1 connected')" ]; then
+    xrandr --output VGA1 --right-of LVDS1 --auto
+    xrandr --output LVDS1 --left-of VGA1 --auto
+fi
+if [ -n "$(xrandr | grep 'DVI1 connected')" ]; then
+    xrandr --output DVI1 --right-of LVDS1 --auto
+    xrandr --output LVDS1 --left-of DVI1 --auto
 fi
 
 xhost +local:
@@ -32,7 +37,7 @@ sudo /sbin/ifup wlan0
 setxkbmap -option compose:menu
 xmodmap .xmodmap_x301
 # load special keymappings for apple alu keyboard
-if [[ -n $(lsusb | grep 'Apple.*Keyboard') ]]; then 
+if [ -n "$(lsusb | grep 'Apple.*Keyboard')" ]; then 
     xmodmap .xmodmap_apple_keyb_alu
 fi
 
@@ -47,7 +52,7 @@ $HOME/bin/start.notify.server
 $HOME/bin/start.osd.mail &
 
 opera &
-pidgin &
+#  pidgin &
 
 $HOME/bin/start.mail
 $HOME/bin/start.loggers
