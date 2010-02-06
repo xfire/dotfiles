@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# vim:syntax=sh:sw=4:ts=4:expandtab
+
+java -Xmx512M -jar $HOME/work/src/sbt-launcher.jar "$@"
