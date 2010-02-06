@@ -1,5 +1,0 @@
-class ${class name}${generalization} {
-    public:
-        virtual ~${class name}() {}
-    ${cursor}
-};

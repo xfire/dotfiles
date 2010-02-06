@@ -171,10 +171,4 @@ let g:alternateExtensions_hh = "cc"
 " `----
 let python_highlight_all = 1
 
-" ,----
-" | jptemplate
-" `----
-let g:jpTemplateDir = '/home/fire/.vim/jptemplates'
-let g:jpTemplateKey = '[Z'
-
 " vim:syntax=vim sw=4 ts=4 expandtab

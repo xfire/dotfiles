@@ -1,3 +1,0 @@
-class ${class name}(${base class:object}):
-    def __init__(self${constructor parameters}):
-        ${cursor}
