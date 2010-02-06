@@ -36,27 +36,9 @@ import Data.Ratio
 import Data.Maybe
 import Data.List
 import Graphics.X11
---  import Graphics.X11.ExtraTypes.XF86
+import Graphics.X11.ExtraTypes.XF86
 import System.IO
 import System.Exit
-
--- needed till Graphics.X11.ExtraTypes.XF86 is available
-xF86XK_AudioLowerVolume     :: KeySym
-xF86XK_AudioLowerVolume     = 269025041
-xF86XK_AudioMute            :: KeySym
-xF86XK_AudioMute            = 269025042
-xF86XK_AudioRaiseVolume     :: KeySym
-xF86XK_AudioRaiseVolume     = 269025043
-xF86XK_ScreenSaver          :: KeySym
-xF86XK_ScreenSaver          = 269025069
-xF86XK_AudioPlay            :: KeySym
-xF86XK_AudioPlay            = 269025044
-xF86XK_AudioStop            :: KeySym
-xF86XK_AudioStop            = 269025045
-xF86XK_AudioPrev            :: KeySym
-xF86XK_AudioPrev            = 269025046
-xF86XK_AudioNext            :: KeySym
-xF86XK_AudioNext            = 269025047
 
 fireFont = "snap"
 fireXFont = "-artwiz-snap-*-*-*-*-*-*-*-*-*-*-iso8859"
@@ -262,16 +244,21 @@ firePP h = defaultPP
 -- shellprompt config
 --
 
-fireSPConfig = XPC { font              = fireXFont,
-                     bgColor           = colorFocusBG,
-                     fgColor           = colorNormalFG,
-                     bgHLight          = colorNormalBG,
-                     fgHLight          = colorFocusFG,
-                     borderColor       = "black",
-                     promptBorderWidth = 0,
-                     position          = Bottom,
-                     height            = 12,
-                     historySize       = 256,
-                     defaultText       = "",
-                     autoComplete      = Nothing
+fireSPConfig = defaultXPConfig
+                   { font                = fireXFont,
+                     bgColor             = colorFocusBG,
+                     fgColor             = colorNormalFG,
+                     bgHLight            = colorNormalBG,
+                     fgHLight            = colorFocusFG,
+                     borderColor         = "black",
+                     promptBorderWidth   = 0,
+                     position            = Bottom,
+                     height              = 12,
+                     historySize         = 256,
+                     defaultText         = "",
+                     autoComplete        = Nothing
+                     --  historyFilter       =,
+                     --  promptKeymap        =,
+                     --  completionKey       =,
+                     --  showCompletionOnTab =
                    }
