@@ -12,7 +12,7 @@
 	branch = auto
 [alias]
     st = status
-    ci = commit
+    cm = commit
     br = branch
     co = checkout
     df = diff
