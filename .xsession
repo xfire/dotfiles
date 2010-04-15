@@ -6,36 +6,14 @@ export LC_CTYPE="$LANG"
 
 PATH=$HOME/bin:$PATH
 
-# samsung TV
-#  xrandr --output LVDS --off
-#  xrandr --output VGA --mode 1600x1200
-
-if [ -n "$(xrandr | grep 'VGA1 connected')" ]; then
-    xrandr --output VGA1 --right-of LVDS1 --auto
-    xrandr --output LVDS1 --left-of VGA1 --auto
-fi
-if [ -n "$(xrandr | grep 'DVI1 connected')" ]; then
-    xrandr --output DVI1 --right-of LVDS1 --auto
-    xrandr --output LVDS1 --left-of DVI1 --auto
-fi
-
-xhost +local:
-
-xset fp+ $HOME/.fonts/
-xset fp rehash
-
 exec xmonad & wmpid=$!
-
-keychain --nocolor $HOME/.ssh/id_private
-
-sudo /sbin/ifup wlan0
 
 ###
 # window manager
 
 # set compose key to menu
-setxkbmap -option compose:menu
-xmodmap .xmodmap_x301
+# setxkbmap -option compose:menu
+# xmodmap .xmodmap_x301
 # load special keymappings for apple alu keyboard
 if [ -n "$(lsusb | grep 'Apple.*Keyboard')" ]; then 
     xmodmap .xmodmap_apple_keyb_alu
@@ -45,14 +23,19 @@ fi
 test -f /usr/bin/autocutsel && /usr/bin/autocutsel -selection CLIPBOARD -fork
 test -f /usr/bin/autocutsel && /usr/bin/autocutsel -selection PRIMARY -fork
 
+gnome-settings-daemon & # handles themes, starts gnome-screensaver. You may have to use gconf to disable it setting the background.
+nm-applet &             # assuming you're using Network Manager
+gnome-power-manager &   # for laptops and stuff
+gnome-volume-manager &  # for mounting CDs, USB sticks, and such
+
 $HOME/bin/pydzen.py &
+trayer --edge top --align right --heighttype pixel --height 16 --widthtype pixel --width 70 --transparent true --alpha 0 --tint '0x2F2E2B'
 $HOME/bin/set_random_wallpaper.zsh
-$HOME/bin/touchpad off
+#$HOME/bin/touchpad off
 $HOME/bin/start.notify.server
 $HOME/bin/start.osd.mail &
 
 opera &
-#  pidgin &
 
 $HOME/bin/start.mail
 $HOME/bin/start.loggers

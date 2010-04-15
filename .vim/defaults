@@ -133,18 +133,6 @@ set completeopt=menu
 let OmniCpp_ShowScopeInAbbr = 1
 let OmniCpp_MayCompleteScope = 1
 
-
-" ,----
-" | enhanced commentify
-" `----
-let g:EnhCommentifyMultiPartBlocks='yes'
-let g:EnhCommentifyUseAltKeys='Yes'
-let g:EnhCommentifyPretty='Yes'
-let g:EnhCommentifyAlignRight = 'Yes'
-let g:EnhCommentifyUseBlockIndent = 'Yes'
-let g:EnhCommentifyRespectIndent = 'Yes'
-let g:EnhCommentifyFirstLineMode = 'Yes'
-
 " ,----
 " | yankring
 " `----
@@ -165,6 +153,11 @@ let g:showmarks_textother="\t"
 " `----
 let g:alternateExtensions_cc = "hh,hxx"
 let g:alternateExtensions_hh = "cc"
+
+" ,----
+" | NERD_commenter
+" `----
+let g:NERDSpaceDelims = 1
 
 " ,----
 " | python syntax highlighting

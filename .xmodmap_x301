@@ -1,10 +1,6 @@
 
 keycode 105 = Delete
 
-! map caps lock key to esc
-remove lock = Caps_Lock
-keycode 0x42 = Escape
-
 ! special keys
 keycode 160 = XF86ScreenSaver
 keycode 166 = XF86Back NoSymbol XF86Back NoSymbol XF86Back

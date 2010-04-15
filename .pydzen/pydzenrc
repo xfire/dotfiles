@@ -15,7 +15,7 @@ PLUGINS = (#'plugins.amarok',
 FONT = '-artwiz-snap-*-*-*-*-*-100-*-*-*-*-*-*'
 
 FG_COLOR = '#b6b4b8'                # default foreground color
-BG_COLOR = '#1c2636'                # default background color
+BG_COLOR = '#2F2E2B'                # default background color
 
 FG_COLOR_NOTICE = '#FFFF00'         # notice foreground color
 BG_COLOR_NOTICE = BG_COLOR          # notice background color
@@ -24,12 +24,14 @@ FG_COLOR_URGENT = '#FF0000'         # urgent foreground color
 BG_COLOR_URGENT = BG_COLOR          # urgent background color
 
 # options for dzen (key's are taken as parameter name)
-DZEN_OPTIONS = dict(fg = FG_COLOR, 
-                    bg = BG_COLOR, 
+DZEN_OPTIONS = dict(fg = FG_COLOR,
+                    bg = BG_COLOR,
                     fn = FONT,
                     ta = 'r',
                     sa = 'r',
                     x = 620,
+                    w = 1440 - 620 - 70,
+                    h = 16,
                     l = 1,
                     u = True,
                     e = 'button1=togglecollapse;')

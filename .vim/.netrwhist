@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/fire/download/d/gradle-0.8/samples/pomGeneration/build'
+let g:netrw_dirhist_2='/home/fire/download/d/gradle-0.8/samples/pomGeneration'
+let g:netrw_dirhist_3='/home/fire/.home_rev_ctrl/public'

@@ -1,6 +1,8 @@
 import XMonad hiding (Tall)
 import XMonad.Operations
 
+import XMonad.Config.Gnome
+
 import XMonad.Actions.DwmPromote
 import XMonad.Actions.CycleWS
 import XMonad.Actions.RotSlaves
@@ -23,6 +25,7 @@ import XMonad.Prompt.Input
 
 import XMonad.Util.Run
 
+import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.DynamicLog   ( PP(..), dynamicLogWithPP, dzenColor, wrap, defaultPP )
 import XMonad.Hooks.XPropManage
@@ -44,18 +47,19 @@ fireFont = "snap"
 fireXFont = "-artwiz-snap-*-*-*-*-*-*-*-*-*-*-iso8859"
 
 colorNormalFG = "#B6B4B8"
-colorNormalBG = "#1C2636"
+colorNormalBG = "#2F2E2B"
 colorNormalBO = "#1C2636"
 colorFocusFG = "#FFFFFF"
-colorFocusBG = "#1C2636"
+colorFocusBG = "#2F2E2B"
 colorFocusBO = "#FF0000"
 colorOtherFG = "#707070"
-colorOtherBG = "#1C2636"
+colorOtherBG = "#2F2E2B"
 
 statusBarCmd = "dzen2_multiscreen" ++ 
                " -bg '" ++ colorNormalBG ++ "'" ++
                " -fg '" ++ colorNormalFG ++ "'" ++
                " -w 620 -sa c" ++
+               " -h 16 -e 'entertitle=uncollapse'" ++
                " -fn '" ++ fireXFont ++ "'" ++
                " -ta l -e ''"
 
@@ -67,7 +71,7 @@ fireScreensKM = [xK_w, xK_q]
 main = do din <- spawnPipe statusBarCmd
           xmonad $ withUrgencyHook NoUrgencyHook
           --  xmonad $ withUrgencyHook dzenUrgencyHook { args = ["-bg", "darkgreen", "-xs", "0"] }
-                 $ defaultConfig { 
+                 $ gnomeConfig { 
               borderWidth        = 1,
               normalBorderColor  = colorNormalBO,
               focusedBorderColor = colorFocusBO,
@@ -79,7 +83,7 @@ main = do din <- spawnPipe statusBarCmd
               layoutHook         = 
                   onWorkspace "F2" ( 
                     windowNavigation ( 
-                      avoidStruts (
+                      avoidStrutsOn [U,D]  (
                         noBorders Full ||| 
                         mkToggle (single REFLECTX) (tiled)
                       )
@@ -87,7 +91,7 @@ main = do din <- spawnPipe statusBarCmd
                   ) $
                   onWorkspace "F3" (
                     windowNavigation (
-                      avoidStruts (
+                      avoidStrutsOn [U,D]  (
                         -- HintedTile 1 (3%100) (1%4) Center Tall
                         withIM (1%4) (And (ClassName "Pidgin") (Role "buddy_list")) (Mirror tiled)
                       )
@@ -95,13 +99,13 @@ main = do din <- spawnPipe statusBarCmd
                   ) $
                   onWorkspace "F5" (
                     windowNavigation (
-                      avoidStruts (
+                      avoidStrutsOn [U,D]  (
                         Mirror tiled
                       )
                     )
                   ) $
                   windowNavigation( 
-                    avoidStruts (
+                    avoidStrutsOn [U,D]  (
                       mkToggle (single REFLECTX) (tiled) ||| 
                       Mirror tiled ||| 
                       noBorders Full ||| 
@@ -171,9 +175,9 @@ main = do din <- spawnPipe statusBarCmd
                  ((modMask                                 , xK_a         ), commandPrompt fireSPConfig "command" commands),
 
                  ((0                            , xF86XK_ScreenSaver      ), spawn "slock"),
-                 ((0                            , xF86XK_AudioMute        ), spawn "sound.sh mute"),
-                 ((0                            , xF86XK_AudioLowerVolume ), spawn "sound.sh lower"),
-                 ((0                            , xF86XK_AudioRaiseVolume ), spawn "sound.sh raise")
+                 ((0                            , xF86XK_AudioMute        ), spawn "sound.py mute"),
+                 ((0                            , xF86XK_AudioLowerVolume ), spawn "sound.py lower"),
+                 ((0                            , xF86XK_AudioRaiseVolume ), spawn "sound.py raise")
                ]
                ++ -- workspaces 1..9 0 F1..F12
                [((m .|. modMask, k), windows $ f i)
@@ -199,23 +203,27 @@ commands = M.fromList [
     ("lock"         , spawn $ "slock"),
     ("mail"         , spawn $ "start.mail"),
     ("firefox"      , spawn $ "firefox"),
-    ("opera"        , spawn $ "opera")]
+    ("opera"        , spawn $ "opera"),
+    ("shutdown"     , spawn $ "gnome-session-save --shutdown-dialog"),
+    ("halt"         , spawn $ "gnome-session-save --shutdown-dialog")]
 
 -- Window rules (floating, tagging, etc) {{{
 --
 fireXPropHook :: [XPropMatch]
 fireXPropHook = 
-    [ ([ (wM_CLASS, any ("MPlayer"==))],          pmX float),
-      ([ (wM_CLASS, any ("gimp"==))],             pmX float),
-      ([ (wM_CLASS, any ("Gimp"==))],             pmX float),
-      ([ (wM_CLASS, any ("mail_downgrade"==))],   pmP (W.shift "F1")),
-      ([ (wM_CLASS, any ("Firefox-bin"==))],      pmP (W.shift "F2")),
-      ([ (wM_CLASS, any ("Iceweasel"==))],        pmP (W.shift "F2")),
-      ([ (wM_CLASS, any ("opera"==))],            pmP (W.shift "F2")),
-      ([ (wM_CLASS, any ("irssi_downgra_de"==))], pmP (W.shift "F3")),
-      ([ (wM_CLASS, any ("pidgin"==))],           pmP (W.shift "F3")),
-      ([ (wM_CLASS, any ("logger_osd"==))],       pmP (W.shift "F5")),
-      ([ (wM_CLASS, any ("logger_syslog"==))],    pmP (W.shift "F5"))
+    [ ([ (wM_CLASS, any ("MPlayer"==))],             pmX float),
+      ([ (wM_CLASS, any ("gimp"==))],                pmX float),
+      ([ (wM_CLASS, any ("Gimp"==))],                pmX float),
+      ([ (wM_CLASS, any ("Do"==))],                  pmX float),
+      ([ (wM_CLASS, any ("tracker-search-tool"==))], pmX float),
+      ([ (wM_CLASS, any ("mail_downgrade"==))],      pmP (W.shift "F1")),
+      ([ (wM_CLASS, any ("Firefox-bin"==))],         pmP (W.shift "F2")),
+      ([ (wM_CLASS, any ("Iceweasel"==))],           pmP (W.shift "F2")),
+      ([ (wM_CLASS, any ("opera"==))],               pmP (W.shift "F2")),
+      ([ (wM_CLASS, any ("irssi_downgra_de"==))],    pmP (W.shift "F3")),
+      ([ (wM_CLASS, any ("pidgin"==))],              pmP (W.shift "F3")),
+      ([ (wM_CLASS, any ("logger_osd"==))],          pmP (W.shift "F5")),
+      ([ (wM_CLASS, any ("logger_syslog"==))],       pmP (W.shift "F5"))
     ]
 
 
@@ -243,7 +251,6 @@ firePP h = defaultPP
  
 -- shellprompt config
 --
-
 fireSPConfig = defaultXPConfig
                    { font                = fireXFont,
                      bgColor             = colorFocusBG,
@@ -257,8 +264,4 @@ fireSPConfig = defaultXPConfig
                      historySize         = 256,
                      defaultText         = "",
                      autoComplete        = Nothing
-                     --  historyFilter       =,
-                     --  promptKeymap        =,
-                     --  completionKey       =,
-                     --  showCompletionOnTab =
                    }

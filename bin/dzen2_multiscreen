@@ -44,6 +44,8 @@ if not screens:
     info.wait()
     screens = len(re.findall(" connected ", screens, re.M))
 
+#xrandr -q | awk -F'current' -F',' 'NR==1 {gsub("( |current)","");print $2}'
+
 for screen in range(0, screens):
     processes.append(subprocess.Popen(['dzen2'] + sys.argv[1:] + ['-xs', str(screen + 1)],
                                       shell=False,
