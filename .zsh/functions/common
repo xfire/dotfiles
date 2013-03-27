@@ -246,7 +246,21 @@ function leo() {
     test -z "$1" && return
     local ap="$*"
     local stext=${ap// /%20}
-    lynx -source "http://dict.leo.org?lp=ende&search=$stext" | grep -i "TABLE.*/TABLE" | lynx -stdin -dump -width=$COLUMNS -nolist
+
+    local onetwo='.{1,2}'
+    local re="$1"
+    local re="${re//[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]/.}"
+    local re="${re//ue/$onetwo}"
+    local re="${re//ae/$onetwo}"
+    local re="${re//oe/$onetwo}"
+    local re="${re//ss/$onetwo}"
+
+    # have to use perl for grepping because of umlauts
+    lynx -dump -width=$COLUMNS -nolist \
+        'http://dict.leo.org/ende?lp=ende&lang=de&searchLoc=0&cmpType=relaxed&sectHdr=on&spellToler=on&search='"$stext"'&relink=on' |\
+        perl -n -e "print if /$re/i;"
+
+    # lynx -source "http://dict.leo.org?lp=ende&search=$stext" | grep -i "TABLE.*/TABLE" | lynx -stdin -dump -width=$COLUMNS -nolist
 }
 
 # show date highlighted

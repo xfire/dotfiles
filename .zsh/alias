@@ -127,6 +127,8 @@ alias rh='rehash'
 alias h='history'
 alias hgrep='fc -l 0|grep'
 alias which='builtin which -a'
+alias g='git'
+alias go='gnome-open'
 
 alias wndclassname='xprop | awk "/WM_CLASS/{print \$3 \$4 \$5}"'
 
@@ -135,7 +137,7 @@ alias sqlta='awk "BEGIN{print \"BEGIN;\"}{print}END{print \"COMMIT;\"}"'
 
 alias xpdf='xpdf -z page'
 alias mc='mc -u'
-alias t='todo.py --todo-dir /home/fire/docz/todo/'
+alias t=task
 
 alias rsync='rsync -ahz --progress --stats --no-whole-file --inplace --partial'
 

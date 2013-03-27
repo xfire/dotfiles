@@ -155,3 +155,6 @@ zle -N self-insert url-quote-magic
 foreach i (~/.zsh/bashcompl/*); 
     source $i; 
 end
+
+compdef g=git
+compdef t=task

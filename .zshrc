@@ -11,6 +11,8 @@ setopt zle
 
 #  eval $(/usr/bin/resize)
 
+export WORKON_HOME="$HOME/.virtualenvs"
+
 if [[ -d "$ZSHDIR" ]] {
     fpath=("$ZSHDIR/functions" $fpath)
     load_config "$ZSHDIR/dirhash"
@@ -19,8 +21,6 @@ if [[ -d "$ZSHDIR" ]] {
     load_config "$ZSHDIR/abbrev_expansion"
     load_config "$ZSHDIR/bindkey"
     load_config "$ZSHDIR/completion"
-    load_config "$ZSHDIR/virtualenvwrapper"
-    load_config "$ZSHDIR/extensions"
     
     if [[ -f "$ZSHDIR/prompt" ]] {
         source "$ZSHDIR/prompt"
